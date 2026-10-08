@@ -1,0 +1,90 @@
+---
+title: "exploratory-analysis"
+author: "Felix Ngo"
+date: "2026-10-07"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(stringr)
+```
+
+
+```{r read-in}
+background <- read.csv("../data/background-clean.csv")
+interest <- read.csv("../data/interest-clean.csv")
+View(background)
+View(interest)
+
+```
+
+```{r prof and comf summary}
+bck_x_inrst |>
+  select(ends_with(".prof"), ends_with(".comf")) |>
+  mutate(across(ends_with(".prof"), ~ recode(
+    .x,
+    "adv" = 3,
+    "int" = 2,
+    "beg" = 1
+  ))) |>
+  mutate(across(ends_with(".comf"), ~ as.numeric(.x))) |> 
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |>
+  summarise(
+    min = min(value, na.rm = TRUE),
+    max = max(value, na.rm = TRUE),
+    mean = mean(value, na.rm = TRUE),
+    median = median(value, na.rm =TRUE),
+    .by = variable
+  )
+
+
+```
+
+
+```{r preference in lab or industry compared to 160}
+
+bck_x_inrst <- background |>
+  left_join(interest, by = "response_id") |>
+  mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
+  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) 
+
+
+
+
+taken160 <- bck_x_inrst |>
+  mutate(taken_160 = str_detect(courses, "\\b160\\b"))
+
+names(colSums(is.na(bck_x_inrst)) > 0 )
+bck_x_inrst[rowSums(is.na(bck_x_inrst)) > 0, ]
+
+ggplot(taken160, aes(x = type, fill = taken_160)) +
+  geom_bar(stat = "count", position = "dodge") +
+  labs(
+    x = "Industry or Research Lab",
+    fill = "Has Taken PSTAT 160?",
+    title = "Distribution of Preference for Industry or Lab Split by Taking PSTAT 160"
+  )
+  
+```
+
+
+```{r proficiency and language}
+
+ggplot(bck_x_inrst, aes(x = prog.prof, fill = language)) +
+  geom_bar(stat = 'count', position = 'dodge') +
+  scale_y_continuous(breaks = scales::pretty_breaks(10)) +
+  labs(
+    title = "Prog.prof Against Language Preference",
+    x = "programming profficiency",
+    fill = "Programming Language"
+  )
+
+```
+
