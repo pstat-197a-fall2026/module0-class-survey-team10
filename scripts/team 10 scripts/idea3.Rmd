@@ -3,3 +3,37 @@ title: "idea3"
 output: html_document
 ---
 
+```{r}
+library(tidyverse)
+library(ggplot2)
+#The relationship between domain specialization and areas of interest in data science
+interest <- read.csv("../../data/interest-clean.csv")
+```
+
+```{r}
+all_areas <- c("Spatial statistics or time series analysis", "Analysis or classification of images", "Deep learning and neural networks", "Data acquisition and engineering", "Natural language processing and analysis of text", "Model deployment and software or web integrations", "Data visualization and interactive dashboards", "Predictive modeling", "Statistical models and inference", "Databases", "Algorithms")
+
+all_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development","Ecology", "AI", "Sports/Economics/Finance", "Music", "Defense", "Economics", "Quauntative Finace", "Financial Markets")
+has_area <- sapply(all_areas, grepl, interest$areas)
+area_counts <- colSums(has_area)
+
+area_df <- data.frame(count = area_counts, areas = names(area_counts))
+
+ggplot(area_df, aes(x = count, y = reorder(areas, count))) + geom_col() + labs(y = "Areas of Interest")
+
+domain_counts <- colSums(sapply(all_domains, grepl, interest$domains))
+
+domain_df <- data.frame(count = domain_counts, domains = names(domain_counts))
+
+ggplot(domain_df, aes(x = count, y = reorder(domains, count))) + geom_col() + labs(y = "Domains of Interest")
+```
+
+```{r}
+domain_list <- c("Social or political science", "Biology", "Software development")
+
+has_domain <- sapply(domain_list, grepl, interest$domains)
+
+cor_df <- as.data.frame(as.table(cor(has_area, has_domain))) 
+
+ggplot(cor_df, aes(x = Freq, y = reorder(Var1,Freq), fill = Var2)) + geom_col(position = "dodge") + labs(y = "Areas of Interest", x = "Correlation", fill = "Domain")
+```
