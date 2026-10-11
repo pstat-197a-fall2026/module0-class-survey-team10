@@ -6,6 +6,7 @@ output: html_document
 ```{r}
 library(tidyverse)
 library(ggplot2)
+library(glmnet)
 #The relationship between domain specialization and areas of interest in data science
 interest <- read.csv("../../data/interest-clean.csv")
 ```
@@ -37,3 +38,69 @@ cor_df <- as.data.frame(as.table(cor(has_area, has_domain)))
 
 ggplot(cor_df, aes(x = Freq, y = reorder(Var1,Freq), fill = Var2)) + geom_col(position = "dodge") + labs(y = "Areas of Interest", x = "Correlation", fill = "Domain")
 ```
+
+
+```{r}
+lasso_fit <- function(domain, has_area, has_domain) {
+  # areas as predictors, domain as the outcome var
+  # convert logical to 0 or 1
+  x <- 1 * has_area
+  y <- as.integer(has_domain[, domain])
+  # 5 fold cross validation to choose penalty
+  set.seed(10)
+  model <- cv.glmnet(
+    x, y,
+    family = "binomial",
+    alpha = 1,  # 1 is lasso, 0 is ridge
+    nfolds = 5
+  )
+  return(model)
+}
+```
+
+
+```{r}
+# make a plot that ranks the features by how important they are in the lasso
+make_plot <- function(model, domain) {
+  # get coefficients
+  coefs <- as.matrix(coef(model, s = "lambda.min"))
+  importance <- data.frame(
+    feature = rownames(coefs), 
+    Coefficient = as.numeric(coefs)
+    )
+  # remove intercept
+  importance <- subset(importance, feature != "(Intercept)")
+  # rank by how important
+  importance$Importance <- abs(importance$Coefficient)
+  importance <- importance[order(-importance$Importance),]
+
+  ggplot(importance, 
+         aes(x = Importance, y = reorder(feature, Importance),fill = Coefficient > 0)) +
+    geom_col() +
+    scale_fill_manual(
+      values = c(
+        "TRUE" = "skyblue",
+        "FALSE" = "lightsalmon"
+      ),
+      labels = c("Negative","Positive")
+    ) +
+    labs(title = paste(domain, "LASSO Feature Importance"), x = "Absolute Coefficient", y = "Areas of Interest", fill = "Association") 
+}
+```
+
+```{r}
+bio_model <- lasso_fit("Biology", has_area, has_domain)
+
+make_plot(bio_model, "Biology")
+```
+```{r}
+software_model <- lasso_fit("Software development", has_area, has_domain)
+
+make_plot(software_model, "Software Development")
+```
+```{r}
+social_model <- lasso_fit("Social or political science", has_area, has_domain)
+
+make_plot(social_model, "Social or Political Science")
+```
+
