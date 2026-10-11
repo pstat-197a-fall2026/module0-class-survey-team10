@@ -18,11 +18,26 @@ background <- read.csv("../data/background-clean.csv")
 interest <- read.csv("../data/interest-clean.csv")
 View(background)
 View(interest)
+interest$areas
+nrow(interest)
 
+sum(background$research == "Yes")
+sum(background$research == "No")
+
+bck_x_intrst <- background |>
+  left_join(interest, by = "response_id") |>
+  mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
+  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
+  drop_na()
+
+bck_x_intrst[rowSums(is.na(bck_x_intrst)) > 0,]
+bck_x_intrst[is.na(bck_x_intrst$type),]
+names(colSums(is.na(bck_x_intrst)) > 0)
+colSums(is.na(bck_x_intrst))
 ```
 
 ```{r prof and comf summary}
-bck_x_inrst |>
+bck_x_intrst |>
   select(ends_with(".prof"), ends_with(".comf")) |>
   mutate(across(ends_with(".prof"), ~ recode(
     .x,
@@ -50,19 +65,11 @@ bck_x_inrst |>
 
 ```{r preference in lab or industry compared to 160}
 
-bck_x_inrst <- background |>
-  left_join(interest, by = "response_id") |>
-  mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
-  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) 
-
-
-
-
-taken160 <- bck_x_inrst |>
+taken160 <- bck_x_intrst |>
   mutate(taken_160 = str_detect(courses, "\\b160\\b"))
 
-names(colSums(is.na(bck_x_inrst)) > 0 )
-bck_x_inrst[rowSums(is.na(bck_x_inrst)) > 0, ]
+names(colSums(is.na(bck_x_intrst)) > 0 )
+bck_x_intrst[rowSums(is.na(bck_x_intrst)) > 0, ]
 
 ggplot(taken160, aes(x = type, fill = taken_160)) +
   geom_bar(stat = "count", position = "dodge") +
@@ -77,7 +84,7 @@ ggplot(taken160, aes(x = type, fill = taken_160)) +
 
 ```{r proficiency and language}
 
-ggplot(bck_x_inrst, aes(x = prog.prof, fill = language)) +
+ggplot(bck_x_intrst, aes(x = prog.prof, fill = language)) +
   geom_bar(stat = 'count', position = 'dodge') +
   scale_y_continuous(breaks = scales::pretty_breaks(10)) +
   labs(
@@ -85,6 +92,55 @@ ggplot(bck_x_inrst, aes(x = prog.prof, fill = language)) +
     x = "programming profficiency",
     fill = "Programming Language"
   )
+
+```
+
+```{r domain proportion against language}
+
+areas_lookup <- tribble(
+  ~from, ~to,
+  
+)
+
+areas <- bck_x_intrst |>
+  select(response_id, areas) |>
+  mutate(areas = str_replace_all(areas, regex(", generally", ignore_case = TRUE), " (generally)")) |>
+  separate_longer_delim(areas, delim = ',')
+
+areas_lang <- bck_x_intrst |>
+  select(-areas) |>
+  left_join(areas, by = 'response_id') |>
+  distinct(response_id, language, areas) |>
+  count(areas, language) |>
+  left_join(
+    bck_x_intrst |>
+      distinct(response_id, language) |>
+      count(language, name = 'n_lang'),
+    by = 'language'
+  ) |>
+  mutate(prop = n / n_lang) 
+
+areas_lang
+bck_x_intrst
+nrow(bck_x_intrst)
+nrow(areas_lang)
+
+ggplot(areas_lang, aes(x = areas, y = prop, fill = language)) +
+  geom_col(position = 'dodge') +
+  coord_flip() +
+  labs(
+    title = paste('Areas vs. Language (n=45)'),
+    x = "Proportion of Group Interested in Area"
+  )
+  
+  # theme(axis.text.x = element_text(angle = 45, vjust = 0.5),
+  #       axis.title.y = element_text(size = 8),
+  #       legend.position = "right",
+  #       # adjust margin to fit the legend: move top margin down
+  #       legend.margin = margin(t = 60))
+
+# Spatial Statistics or time series analysis, Model Deployment and Software or web integrations,
+
 
 ```
 

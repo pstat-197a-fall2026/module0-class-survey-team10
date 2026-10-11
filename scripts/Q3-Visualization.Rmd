@@ -1,0 +1,102 @@
+---
+title: "Q3-Visualization"
+author: "Felix Ngo"
+date: "2026-10-11"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+
+# Question 3:
+# Are students that have done supervised research (not related to class or personal project) more interested in research labs than industry or not?
+```
+
+```{r load data}
+background <- read.csv("../data/background-clean.csv")
+interest <- read.csv("../data/interest-clean.csv")
+
+# Join data and drop NA since 2 participants shows up as NA for type
+bck_x_intrst <- background |>
+  left_join(interest, by = "response_id") |>
+  mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
+  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
+  # Decide that "both" in project `type` will mean "lab"
+  mutate(type = recode_factor(type, 
+                              'both' = 'both', 
+                              'ind' = 'industry',
+                              'lab' = 'research lab')) |> 
+  drop_na() |>
+  filter_out(research == "Unsure")
+
+
+
+# 4 participants answered "Unsure" under `research` background and were excluded
+# Testing if Unsure to be coded as "Yes" or "No" showed that it did not significantly influence the correlation between research and project type preference. 
+
+# participants 1038 and 1046 are dropped for having NA in `type`
+# n = 41
+```
+
+
+```{r variables}
+
+# n = 41
+
+# Research:
+# Yes = 23
+# No = 18
+
+# type:
+# lab = 6
+# industry = 26
+# both = 9
+
+# No evidence of difference
+table(bck_x_intrst$research, bck_x_intrst$type)
+
+
+type_research <- bck_x_intrst |>
+  distinct(response_id, type, research) |>
+  count(type, research) |>
+  left_join(
+    bck_x_intrst |>
+      distinct(response_id, research) |>
+      count(research, name = 'n_research'),
+    by = 'research'
+  ) |>
+  mutate(prop = n / n_research)
+
+type_research
+
+```
+
+```{r visualisation}
+
+# Proportion Graph
+ggplot(type_research, aes(x = research, y = prop, fill = type)) +
+  geom_col( position = 'dodge') +
+  scale_y_continuous(breaks = scales::pretty_breaks(20)) +
+  labs(
+    title = "Research Done vs. Project Type Preference (Proportion) (n = 41)",
+    y = 'Proportion',
+    x = 'Done Supervised Research?',
+    fill = 'Project type'
+  )
+
+# Histogram Graph
+ggplot(bck_x_intrst, aes(x = research, fill = type)) +
+  geom_col(stat = 'count', position = 'dodge') +
+  scale_y_continuous(breaks = scales::pretty_breaks(20)) +
+  labs(
+    title = "Research Done vs. Project Type Preference (Histogram) (n = 41)",
+    y = 'count',
+    x = 'Done Supervised Research?',
+    fill = 'Project type'
+  )
+```
+
+
+
