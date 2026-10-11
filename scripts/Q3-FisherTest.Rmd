@@ -1,0 +1,52 @@
+---
+title: "Q3-FisherTest"
+author: "Felix Ngo"
+date: "2026-10-11"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(kableExtra)
+library(gtsummary)
+library(gt)
+```
+
+```{r load data}
+background <- read.csv("../data/background-clean.csv")
+interest <- read.csv("../data/interest-clean.csv")
+
+# Join data and drop NA since 2 participants shows up as NA for type
+bck_x_intrst <- background |>
+  left_join(interest, by = "response_id") |>
+  mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
+  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
+  # Decide that "both" in project `type` will mean "lab"
+  mutate(type = recode_factor(type, 
+                              'both' = 'both', 
+                              'ind' = 'industry',
+                              'lab' = 'research lab')) |> 
+  drop_na() |>
+  filter_out(research == "Unsure")
+```
+
+
+```{r Fisher test}
+# Show the contingency table
+
+
+fsher_tbl <- bck_x_intrst |>
+  tbl_summary(
+    by = research, include = type
+  ) |>
+  add_p(test = everything() ~ "fisher.test") |>
+  modify_caption("**Project Type Interest by Research Background**") |>
+  modify_header(label = "Project Type") |>
+  as_gt()
+
+fsher_tbl
+
+gtsave(data = fsher_tbl, 
+       filename = "../results/report_files/figure-html/Q3-figures/Q3-Fisher-Table.png")
+```
