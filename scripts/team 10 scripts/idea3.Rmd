@@ -14,14 +14,19 @@ interest <- read.csv("../../data/interest-clean.csv")
 ```{r}
 all_areas <- c("Spatial statistics or time series analysis", "Analysis or classification of images", "Deep learning and neural networks", "Data acquisition and engineering", "Natural language processing and analysis of text", "Model deployment and software or web integrations", "Data visualization and interactive dashboards", "Predictive modeling", "Statistical models and inference", "Databases", "Algorithms")
 
-all_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development","Ecology", "AI", "Sports/Economics/Finance", "Music", "Defense", "Economics", "Quauntative Finace", "Financial Markets")
+all_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development","Ecology", "AI", "Sports/Economics/Finance", "Music", "Defense", "Economics", "Quantitative Finance", "Financial Markets")
+```
+
+```{r}
 has_area <- sapply(all_areas, grepl, interest$areas)
 area_counts <- colSums(has_area)
 
 area_df <- data.frame(count = area_counts, areas = names(area_counts))
 
 ggplot(area_df, aes(x = count, y = reorder(areas, count))) + geom_col() + labs(y = "Areas of Interest")
+```
 
+```{r}
 domain_counts <- colSums(sapply(all_domains, grepl, interest$domains))
 
 domain_df <- data.frame(count = domain_counts, domains = names(domain_counts))
@@ -38,7 +43,6 @@ cor_df <- as.data.frame(as.table(cor(has_area, has_domain)))
 
 ggplot(cor_df, aes(x = Freq, y = reorder(Var1,Freq), fill = Var2)) + geom_col(position = "dodge") + labs(y = "Areas of Interest", x = "Correlation", fill = "Domain")
 ```
-
 
 ```{r}
 lasso_fit <- function(domain, has_area, has_domain) {
@@ -57,7 +61,6 @@ lasso_fit <- function(domain, has_area, has_domain) {
   return(model)
 }
 ```
-
 
 ```{r}
 # make a plot that ranks the features by how important they are in the lasso
@@ -93,14 +96,15 @@ bio_model <- lasso_fit("Biology", has_area, has_domain)
 
 make_plot(bio_model, "Biology")
 ```
+
 ```{r}
 software_model <- lasso_fit("Software development", has_area, has_domain)
 
 make_plot(software_model, "Software Development")
 ```
+
 ```{r}
 social_model <- lasso_fit("Social or political science", has_area, has_domain)
 
 make_plot(social_model, "Social or Political Science")
 ```
-
