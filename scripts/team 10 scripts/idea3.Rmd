@@ -7,7 +7,6 @@ output: html_document
 library(tidyverse)
 library(ggplot2)
 library(glmnet)
-#The relationship between domain specialization and areas of interest in data science
 interest <- read.csv("../../data/interest-clean.csv")
 ```
 
@@ -15,6 +14,8 @@ interest <- read.csv("../../data/interest-clean.csv")
 all_areas <- c("Spatial statistics or time series analysis", "Analysis or classification of images", "Deep learning and neural networks", "Data acquisition and engineering", "Natural language processing and analysis of text", "Model deployment and software or web integrations", "Data visualization and interactive dashboards", "Predictive modeling", "Statistical models and inference", "Databases", "Algorithms")
 
 all_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development","Ecology", "AI", "Sports/Economics/Finance", "Music", "Defense", "Economics", "Quantitative Finance", "Financial Markets")
+
+main_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development")
 ```
 
 ```{r}
@@ -32,6 +33,14 @@ domain_counts <- colSums(sapply(all_domains, grepl, interest$domains))
 domain_df <- data.frame(count = domain_counts, domains = names(domain_counts))
 
 ggplot(domain_df, aes(x = count, y = reorder(domains, count))) + geom_col() + labs(y = "Domains of Interest")
+```
+
+```{r}
+has_domain_main <- sapply(main_domains, grepl, interest$domains)
+
+cor_main <- as.data.frame(as.table(cor(has_area, has_domain_main))) 
+
+ggplot(cor_main, aes(x = Var2, y = Var1, fill = Freq)) + geom_tile(color = "white") + scale_fill_gradient(low = "lightsalmon", high = "skyblue") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(x = "Domains", y = "Areas of Interest", fill = "Correlation")
 ```
 
 ```{r}
