@@ -1,15 +1,4 @@
-1. (Modeling) Do students’ domains correlate with students’ preferences in the area of interest?
-* Variables, Files, and Respondents:
-* Data Preparation:
-* Summaries or Plots:
-* Key Choices to Check:
-* Limitations:
-
-&#x20;
-
-
-
-2\. (Modeling) Does programming language correlate with students’ interest in statistical inference?
+1\. (Modeling) Does programming language correlate with students’ interest in statistical inference?
 
 * Variables, Files, and Respondents:
 
@@ -44,6 +33,16 @@
   * Small sample, especially the R group (n = 11) -- wide confidence intervals, neither result reaches p < 0.05
   * Correlation, not causation -- can't claim language preference causes interest in statistical inference; more likely both stem from the same underlying stats-vs-ML leaning
   * No multiple-testing correction applied (not needed for the single scoped area, would matter if the 3-area version is also reported)
+
+2. (Modeling) Do students’ domains correlate with students’ preferences in the area of interest?
+* Variables, Files, and Respondents:
+* Data Preparation:
+* Summaries or Plots:
+* Key Choices to Check:
+* Limitations:
+
+&#x20;
+
 
 
 

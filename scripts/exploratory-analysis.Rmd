@@ -29,9 +29,15 @@ bck_x_intrst <- background |>
   mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
   mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) 
 
+names(which(colSums(is.na(interest)) > 0))
+names(which(colSums(is.na(background)) > 0 ))
+
+setdiff(background$response_id, interest$response_id)
+
+
 bck_x_intrst[rowSums(is.na(bck_x_intrst)) > 0,]
 bck_x_intrst[is.na(bck_x_intrst$type),]
-names(colSums(is.na(bck_x_intrst)) > 0)
+names(which(colSums(is.na(bck_x_intrst)) > 0))
 colSums(is.na(bck_x_intrst))
 ```
 
