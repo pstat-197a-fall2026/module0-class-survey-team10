@@ -27,8 +27,7 @@ sum(background$research == "No")
 bck_x_intrst <- background |>
   left_join(interest, by = "response_id") |>
   mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
-  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
-  drop_na()
+  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) 
 
 bck_x_intrst[rowSums(is.na(bck_x_intrst)) > 0,]
 bck_x_intrst[is.na(bck_x_intrst$type),]

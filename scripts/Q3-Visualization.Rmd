@@ -27,32 +27,31 @@ bck_x_intrst <- background |>
   mutate(type = recode_factor(type, 
                               'both' = 'both', 
                               'ind' = 'industry',
-                              'lab' = 'research lab')) |> 
-  drop_na() |>
+                              'lab' = 'research lab')) |>
+  filter_out(is.na(type)) |>
   filter_out(research == "Unsure")
 
 
-
-# 4 participants answered "Unsure" under `research` background and were excluded
+# 4 pbck_x_intrst# 4 participants answered "Unsure" under `research` background and were excluded
 # Testing if Unsure to be coded as "Yes" or "No" showed that it did not significantly influence the correlation between research and project type preference. 
 
 # participants 1038 and 1046 are dropped for having NA in `type`
-# n = 41
+# n = 45
 ```
 
 
 ```{r variables}
 
-# n = 41
+# n = 45
 
 # Research:
-# Yes = 23
-# No = 18
+# Yes = 24
+# No = 21
 
 # type:
 # lab = 6
-# industry = 26
-# both = 9
+# industry = 28
+# both = 11
 
 # No evidence of difference
 table(bck_x_intrst$research, bck_x_intrst$type)
@@ -76,26 +75,35 @@ type_research
 ```{r visualisation}
 
 # Proportion Graph
-ggplot(type_research, aes(x = research, y = prop, fill = type)) +
+prop_grph <- ggplot(type_research, aes(x = research, y = prop, fill = type)) +
   geom_col( position = 'dodge') +
   scale_y_continuous(breaks = scales::pretty_breaks(20)) +
   labs(
-    title = "Research Done vs. Project Type Preference (Proportion) (n = 41)",
+    title = "Research Done vs. Project Type Preference (Proportion) (n = 45)",
     y = 'Proportion',
     x = 'Done Supervised Research?',
     fill = 'Project type'
   )
 
+prop_grph
+
 # Histogram Graph
-ggplot(bck_x_intrst, aes(x = research, fill = type)) +
+hist_grph <- ggplot(bck_x_intrst, aes(x = research, fill = type)) +
   geom_col(stat = 'count', position = 'dodge') +
   scale_y_continuous(breaks = scales::pretty_breaks(20)) +
   labs(
-    title = "Research Done vs. Project Type Preference (Histogram) (n = 41)",
+    title = "Research Done vs. Project Type Preference (Histogram) (n = 45)",
     y = 'count',
     x = 'Done Supervised Research?',
     fill = 'Project type'
   )
+
+hist_grph
+
+ggsave(filename = "../results/report_files/figure-html/Q3-figures/Q3-Proportion-Graph.png",
+       plot = prop_grph)
+ggsave(filename = "../results/report_files/figure-html/Q3-figures/Q3-Histogram-Graph.png",
+       plot = hist_grph)
 ```
 
 
