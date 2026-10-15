@@ -2,6 +2,9 @@
 title: "idea1 -- Language preference and interest in statistical inference"
 author: "Varun"
 output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -12,45 +15,56 @@ library(broom)
 
 ## Question (as confirmed in `scripts/analysis-plan.md`)
 
-**Does programming language correlate with students' interest in statistical inference?**
+**Does programming language correlate with students' interest in
+statistical inference?**
 
 We are not claiming language preference *causes* interest in statistical
-inference -- more likely both come from the same underlying pull toward the
-"stats" side vs. the "ML" side of data science. We're checking whether the
-two tend to go together, not asserting a causal direction.
+inference -- more likely both come from the same underlying pull toward
+the "stats" side vs. the "ML" side of data science. We're checking
+whether the two tend to go together, not asserting a causal direction.
 
 ## Variables, files, and respondents
 
 | Variable | File | What it is |
-|---|---|---|
+|------------------------|------------------------|------------------------|
 | `language` | `interest-clean.csv` | R / Python / No preference |
 | `areas` | `interest-clean.csv` | multi-select checklist of data science areas (comma-separated); we use the single option "Statistical models and inference, generally" |
 | `response_id` | `interest-clean.csv` | respondent id |
 
-Only `interest-clean.csv` is needed -- both `language` and `areas` live in
-the same file, so no join to `background-clean.csv` is required for this
-question.
+Only `interest-clean.csv` is needed -- both `language` and `areas` live
+in the same file, so no join to `background-clean.csv` is required for
+this question.
 
-**Respondents: n = 49** (the full interest-clean.csv). We checked directly --
-`language`, `type`, and `areas` all have **zero missing values** in the
-current data file, so no rows need to be dropped for this question. (Note:
-an earlier team note referenced 2 respondents, ids 1038/1046, with NA
-language/type -- that was based on an older version of the data; it no
-longer applies to the current `interest-clean.csv`, confirmed by direct
-check.)
+**Respondents: n = 49** (the full interest-clean.csv). We checked
+directly -- `language`, `type`, and `areas` all have **zero missing
+values** in the current data file, so no rows need to be dropped for
+this question. (Note: an earlier team note referenced 2 respondents, ids
+1038/1046, with NA language/type -- that was based on an older version
+of the data; it no longer applies to the current `interest-clean.csv`,
+confirmed by direct check.)
 
 ## Data preparation
 
-1. Build a binary outcome column: did the respondent select "Statistical
-   models and inference, generally" in their `areas` response? (1 = yes, 0 = no)
-   - This label contains an internal comma, so if you ever split `areas`
-     into long format for other areas, protect this label first
-     (`str_replace_all` to a comma-free version) before splitting on commas.
-     For this question we only need one label, so we just use
-     `str_detect(areas, fixed("Statistical models and inference"))`,
-     which is safe without any comma-splitting.
-2. Set `language` as a factor with reference level `"Python"` (the largest
-   group, n = 22) so model output reads as "relative to Python."
+***We want to build a binary outcome column to help visualize this data
+easier. Therefore, we define the respondents' answers to "Statistical
+models and inference, generally" as (1 = yes, 0 = no). Then, we will set
+the language as a factor with the reference level "Python" since it is
+the largest group, n=22. As a result, our model output will read as
+"relative to Python."***
+
+1.  Build a binary outcome column: did the respondent select
+    "Statistical models and inference, generally" in their `areas`
+    response? (1 = yes, 0 = no)
+    -   This label contains an internal comma, so if you ever split
+        `areas` into long format for other areas, protect this label
+        first (`str_replace_all` to a comma-free version) before
+        splitting on commas. For this question we only need one label,
+        so we just use
+        `str_detect(areas, fixed("Statistical models and inference"))`,
+        which is safe without any comma-splitting.
+2.  Set `language` as a factor with reference level `"Python"` (the
+    largest group, n = 22) so model output reads as "relative to
+    Python."
 
 ```{r prep}
 interest <- read_csv('../../data/interest-clean.csv', show_col_types = FALSE)
@@ -66,6 +80,8 @@ count(d, language)
 ```
 
 ## Summary / plot
+
+***Now, lets visualize our data!***
 
 ```{r summary-table}
 d %>%
@@ -93,11 +109,21 @@ ggsave('../../results/figures/language-vs-statinference.png', fig, width = 6, he
 interested in statistical inference (81.8%), followed by No preference
 (68.8%), then Python (50.0%).
 
+***As we can see from this bar graph representing the proportion of
+respondents within each language-preference group that expressed
+interest in statistical inference, we can see that students who
+preferred the language R showed the most interest in statistical
+inference (81.8%). This was followed by students who expressed no
+preference in language (68.8%), and then Python (50.0%).***
+
 ## Model: logistic regression
 
-Outcome: interested in statistical inference (0/1). Predictor: `language`
-(reference = Python). This quantifies the pattern in the figure with an
-odds ratio and a 95% confidence interval, instead of just comparing bars by eye.
+***Now it is time to fit our model!***
+
+Outcome: interested in statistical inference (0/1). Predictor:
+`language` (reference = Python). This quantifies the pattern in the
+figure with an odds ratio and a 95% confidence interval, instead of just
+comparing bars by eye.
 
 ```{r model}
 model <- glm(interested_stat_inference ~ language, data = d, family = 'binomial')
@@ -113,57 +139,119 @@ model_results
 
 **Results (reference group = Python, n = 49):**
 
-| Language | Odds ratio | 95% CI | p-value |
-|---|---|---|---|
-| R | 4.50 | 0.90 -- 34.2 | 0.091 |
-| No preference | 2.20 | 0.59 -- 9.01 | 0.251 |
+| Language      | Odds ratio | 95% CI       | p-value |
+|---------------|------------|--------------|---------|
+| R             | 4.50       | 0.90 -- 34.2 | 0.091   |
+| No preference | 2.20       | 0.59 -- 9.01 | 0.251   |
 
 **In plain words:** R-preferring students had roughly 4.5x the odds of
 being interested in statistical inference compared to Python-preferring
-students. No-preference students had roughly 2.2x the odds. Both point in
-the expected direction -- and the R comparison is close to the conventional
-significance threshold (p = 0.091, just above 0.05) -- but neither formally
-reaches p < 0.05. The sample is small, especially the R group (n = 11), so
-the confidence intervals are wide (R's spans from "barely different," 0.90,
-to "very different," 34.2). Report this as a *trend*, not a *confirmed*
-effect.
+students. No-preference students had roughly 2.2x the odds. Both point
+in the expected direction -- and the R comparison is close to the
+conventional significance threshold (p = 0.091, just above 0.05) -- but
+neither formally reaches p \< 0.05. The sample is small, especially the
+R group (n = 11), so the confidence intervals are wide (R's spans from
+"barely different," 0.90, to "very different," 34.2). Report this as a
+*trend*, not a *confirmed* effect.
+
+***Results:***
+
+***We fit a logistic regression model to examine whether interest in
+statistical inference differed by programming language preference. We
+can see that interest in statistical inference differed across language
+groups, as seen in our bar graph. Within each group, 81.8% of
+R-preferring students expressed interest in statistical inference,
+compared to 68.8% of those with no preference, and 50.0% of students who
+preferred Python.***
+
+***R-preferring students had 4.5 times the odds of Python-preferring
+students of being interested in statistical inference (95% CI: 0.90 to
+34.2; p = 0.091). Additionally, students with no preference in language
+had 2.2 times the odds of Python-preferring students (95% CI: 0.59 to
+9.01; p = 0.251). However, neither of these results reached the
+threshold of p \< .05. While the R-preference group reached a p-value =
+0.091, it still did not meet the 0.05 threshold. The sample for this
+test is small, especially the R-preference group (n=11). Therefore,
+confidence intervals are wide and both include 1, indicating that the
+data is compatible with no difference as well as with a large one. These
+results are best reported as a trend, rather than a confirmed effect.
+They describe an association, not a causal relationship.***
+
+***Interpretation:***
+
+***Students who preferred R were more than likely to be interested in
+statistical inference than students who preferred Python (81.8% vs.
+50.0%). Those who did not have a preference fell in between (68.8%).
+This relationship between language preference and interest in
+statistical inference is expected, but the evidence is not strong due to
+the small sample size, neither comparison being statistically
+significant, and the confidence intervals being wide enough to have no
+difference at all. Since there are only 11 students that reported
+preferring R as a programming language, one or two different answers
+could noticeably change the estimated odds ratio. Therefore,***
+
+***These results describe an association, not a causal relationship. One
+reason for this relationship could be that students who are already more
+interested in statistics may be more likely to choose R, a language that
+was built for statisticians. Our data cannot test this explanation,
+because we have no direct measure of that orientation. It should be read
+as a hypothesis, not a finding. Another reason could be that since most
+courses at UCSB only use and teach in R, students may just feel more
+comfortable in this language in general.***
+
+***Limitations:***
+
+***There were a few limitations to these results. First, the sample is
+small (n = 49), and the R group in particular has only 11 students.
+Therefore, the estimates are imprecise and the analysis has low power to
+detect moderate differences. Second, the non-significant results are not
+evidence of having no effect. It means that the data is inconclusive.
+Third, interest was measured by whether students ticked a box on a
+checklist, so a student who did not select statistical inference may
+still be interested in it. Fourth, we did not account for other factors
+that could influence both language preference and interest, such as
+prior coursework, major, or instructor. Finally, we focused on one area
+after initially exploring three. Because that choice was informed by the
+data, the p-values should be read as descriptive rather than as
+confirmatory tests.***
 
 ## Key choices made (for the team / report writers)
 
-- **Reference level = Python**, since it's the largest group (n = 22) --
-  makes every comparison read naturally as "relative to the most common
-  choice."
-- **No rows dropped** -- checked directly, `language`/`type`/`areas` have
-  zero missing values in the current data, so all 49 respondents are used.
-- **Single area only ("Statistical models and inference")**, per the team's
-  narrowed scope in `analysis-plan.md` -- we originally explored 3 areas
-  (also Deep learning, NLP) and saw a consistent stats-vs-ML split across
-  all of them; happy to share that broader context if it's useful for the
-  report's discussion, but the committed model/figure here is scoped to
-  just the one area.
+-   **Reference level = Python**, since it's the largest group (n = 22)
+    -- makes every comparison read naturally as "relative to the most
+    common choice."
+-   **No rows dropped** -- checked directly, `language`/`type`/`areas`
+    have zero missing values in the current data, so all 49 respondents
+    are used.
+-   **Single area only ("Statistical models and inference")**, per the
+    team's narrowed scope in `analysis-plan.md` -- we originally
+    explored 3 areas (also Deep learning, NLP) and saw a consistent
+    stats-vs-ML split across all of them; happy to share that broader
+    context if it's useful for the report's discussion, but the
+    committed model/figure here is scoped to just the one area.
 
 ## Limitations
 
-- **Small sample, especially the R group (n = 11)**: odds ratios are
-  imprecise; the 95% CI for R spans from "barely different" (0.81) to
-  "huge difference" (31.3).
-- **Neither result is statistically significant** at the conventional
-  p < 0.05 threshold -- describe as suggestive, not conclusive.
-- **Correlation, not causation**: can't say language preference causes
-  interest in statistical inference; more likely both stem from the same
-  underlying stats-vs-ML leaning (e.g., R was built for statisticians,
-  so people already into stats tend to pick it).
-- **No multiple-testing correction** needed here since we only tested one
-  area per the narrowed scope (this matters more if the 3-area version is
-  also reported).
+-   **Small sample, especially the R group (n = 11)**: odds ratios are
+    imprecise; the 95% CI for R spans from "barely different" (0.81) to
+    "huge difference" (31.3).
+-   **Neither result is statistically significant** at the conventional
+    p \< 0.05 threshold -- describe as suggestive, not conclusive.
+-   **Correlation, not causation**: can't say language preference causes
+    interest in statistical inference; more likely both stem from the
+    same underlying stats-vs-ML leaning (e.g., R was built for
+    statisticians, so people already into stats tend to pick it).
+-   **No multiple-testing correction** needed here since we only tested
+    one area per the narrowed scope (this matters more if the 3-area
+    version is also reported).
 
 ## For whoever writes the interpretation / report section
 
-- Headline number to quote: **R students ~4.5x the odds of stats-inference
-  interest vs. Python students (p = 0.091, not quite significant at the
-  conventional 0.05 threshold, n = 49)**.
-- Raw proportions, if a simpler number is preferred over the odds ratio:
-  R = 81.8% interested, No preference = 68.8%, Python = 50.0%.
-- Figure file: `results/figures/language-vs-statinference.png`
-- Full code above is self-contained and reproducible (just needs
-  `data/interest-clean.csv`).
+-   Headline number to quote: **R students \~4.5x the odds of
+    stats-inference interest vs. Python students (p = 0.091, not quite
+    significant at the conventional 0.05 threshold, n = 49)**.
+-   Raw proportions, if a simpler number is preferred over the odds
+    ratio: R = 81.8% interested, No preference = 68.8%, Python = 50.0%.
+-   Figure file: `results/figures/language-vs-statinference.png`
+-   Full code above is self-contained and reproducible (just needs
+    `data/interest-clean.csv`).

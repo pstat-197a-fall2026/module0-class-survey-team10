@@ -41,6 +41,10 @@ names(which(colSums(is.na(bck_x_intrst)) > 0))
 colSums(is.na(bck_x_intrst))
 ```
 
+To answer our final question, we first want to clean up our data! We are focusing on the variables `type` and `research`. From our data, `type` answers whether the respondent is interested in a research or industry project, and `research` represents whether the respondent has prior supervised research experience. As we can see, Respondent id 1038 and 1046 have NA values under `type`. We excluded these two respondents because their type was unavailable. All of the remainign respondents had complete data on type and research. Among the respondents with a clear answer on prior expereince in supervised research, 23 reported having experience and 24 did not. 
+
+
+
 ```{r prof and comf summary}
 bck_x_intrst |>
   select(ends_with(".prof"), ends_with(".comf")) |>
@@ -66,6 +70,8 @@ bck_x_intrst |>
 
 
 ```
+
+From the data, students rated their own proficiency on a three-point scale (beginner = 1, intermediate = 2, advanced = 3). Self-rated proficiency was highest in statistics (mean = 2.65, median = 3), followed by math (mean = 2.41, median = 2) and programming (mean = 2.25, median = 2). No respondent rated themselves a beginner in math or statistics (minimum = 2), while some did in programming (minimum = 1). Overall, students described themselves as intermediate to advanced, with the strongest self-assessment in statistics.
 
 
 ```{r preference in lab or industry compared to 160}
