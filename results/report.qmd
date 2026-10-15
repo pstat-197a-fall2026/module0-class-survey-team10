@@ -29,34 +29,39 @@ This data was taken from a self-reported intake form from all the students enrol
 
 A summary of the main characteristics of `background-clean.csv` can be seen here:
 
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Variable                   | Description                                                                                                                                                                                  |
-+============================+==============================================================================================================================================================================================+
-| `[skill].comf`             | A numerical scale of 1-5 which measures how the student rates their comfortability with the respective skill.                                                                                |
-|                            |                                                                                                                                                                                              |
-| e.g., prog.comf, math.comf | The skills: prog \[programming\], math, stat \[statistics\]                                                                                                                                  |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `[skill].prof`             | An ordinal variable which goes: beg \[beginning\], int \[intermediate\], adv \[advanced\]. This measures how the student rates their proficiency with the respective skill.                  |
-|                            |                                                                                                                                                                                              |
-| e.g., prog.prof, math.prof |                                                                                                                                                                                              |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `upper_div_courses`        | An ordinal variable that groups the number of upper division courses in statistics, math, and programming that the student has taken.                                                        |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `courses`                  | A character that contains a list of the specific courses that the student has completed.                                                                                                     |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `domain_specialization`    | A yes or no answer to whether the student has any domain specialization.                                                                                                                     |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `research`                 | A categorical variable which contains: yes, no, and unsure. Answers to whether the student has had experienced with supervised research in a setting outside of class or personal projects.  |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable                   | Description                                                                                                                                                                                 |
++============================+=============================================================================================================================================================================================+
+| `[skill].comf`             | A numerical scale of 1-5 which measures how the student rates their comfortability with the respective skill.                                                                               |
+|                            |                                                                                                                                                                                             |
+| e.g., prog.comf, math.comf | The skills: prog \[programming\], math, stat \[statistics\]                                                                                                                                 |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `[skill].prof`             | An ordinal variable which goes: beg \[beginning\], int \[intermediate\], adv \[advanced\]. This measures how the student rates their proficiency with the respective skill.                 |
+|                            |                                                                                                                                                                                             |
+| e.g., prog.prof, math.prof |                                                                                                                                                                                             |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `upper_div_courses`        | An ordinal variable that groups the number of upper division courses in statistics, math, and programming that the student has taken.                                                       |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `courses`                  | A character that contains a list of the specific courses that the student has completed.                                                                                                    |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `domain_specialization`    | A yes or no answer to whether the student has any domain specialization.                                                                                                                    |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `research`                 | A categorical variable which contains: yes, no, and unsure. Answers to whether the student has had experienced with supervised research in a setting outside of class or personal projects. |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 A summary of the main characteristics of `interests-clean.csv` can be seen here:
 
-| Variable | Description |
-|----|----|
-| `type` | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
-| `language` | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference |
-| `domains` | A character that contains a list of the domains that the student had selected as their specialization |
-| `areas` | A character that contains a list of the areas of interest in data science that the student had selected. |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable                         | Description                                                                                                                                  |
++==================================+==============================================================================================================================================+
+| `type`                           | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| `language`                       | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference                  |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| `domains`                        | A character that contains a list of the domains that the student had selected as their specialization                                        |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| `areas`                          | A character that contains a list of the areas of interest in data science that the student had selected.                                     |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 ## Questions of interest
 
@@ -71,50 +76,3 @@ Our analysis addressed three questions:
 ## Findings
 
 Summarize your results. Don't try to explain every step you took; focus instead on providing the main data analytic outputs -- tables and figures -- and explaining clearly what they show. Clarify any important decisions you made in obtaining them. You can display codes if you like but it is not necessary.
-
-## Useful tips (remove this section)
-
-Due to the visual editor, most common needs for authoring can be met using menu items in the RStudio IDE. For a comprehensive guide to Quarto, see the [documentation](https://quarto.org/docs/guide/); consult the documentation for anything you can't sort out in the IDE.
-
-### Code chunks
-
-Insert code chunks using the *Insert* drop-down menu or `ctrl + alt + I` . By default in this document, codes will not be shown but results will. If you want to change this behavior, add the chunk option `echo: true` as below.
-
-```{r}
-#| echo: true
-my_df <- tibble(animal = c('snake', 'gecko'),
-                threatening = c(TRUE, FALSE))
-
-my_df
-```
-
-Code chunks will be executed in order when the document is rendered, so packages should be loaded at the very beginning of the document
-
-### Rendering tables in markdown
-
-Several functions exist for converting dataframes to markdown tables for nice display. A simple one from the `knitr` package is `knitr::kable()` .
-
-```{r}
-my_df %>% knitr::kable()
-```
-
-### Figures
-
-To include any figures not generated by code chunks, use *Insert \> Figure / Image* or `![CAPTION](path/file.ext)` .
-
-Most of the time code chunks producing plots will render fine. However, to adjust sizing or alignment, use the chunk options `fig-width` and `fig-height` . Captions can be added with `fig-cap` .
-
-```{r}
-#| fig-width: 4
-#| fig-height: 3
-#| fig-align: left
-#| fig-cap: A terrible plot.
-
-my_df %>% 
-  ggplot(aes(x = animal, y = threatening)) + 
-  geom_col()
-```
-
-### Links
-
-To include any hyperlinks, use `[display text](url)` .

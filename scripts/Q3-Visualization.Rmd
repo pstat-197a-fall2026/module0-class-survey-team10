@@ -100,9 +100,9 @@ hist_grph <- ggplot(bck_x_intrst, aes(x = research, fill = type)) +
 
 hist_grph
 
-ggsave(filename = "../results/report_files/figure-html/Q3-figures/Q3-Proportion-Graph.png",
+ggsave(filename = "../results/figures/Q3-figures/Q3-Proportion-Graph.png",
        plot = prop_grph)
-ggsave(filename = "../results/report_files/figure-html/Q3-figures/Q3-Histogram-Graph.png",
+ggsave(filename = "../results/figures/Q3-figures/Q3-Histogram-Graph.png",
        plot = hist_grph)
 ```
 

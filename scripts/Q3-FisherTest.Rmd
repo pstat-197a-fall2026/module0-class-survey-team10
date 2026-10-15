@@ -48,5 +48,5 @@ fsher_tbl <- bck_x_intrst |>
 fsher_tbl
 
 gtsave(data = fsher_tbl, 
-       filename = "../results/report_files/figure-html/Q3-figures/Q3-Fisher-Table.png")
+       filename = "../results/figures/Q3-figures/Q3-Fisher-Table.png")
 ```
