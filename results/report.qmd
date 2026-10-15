@@ -29,25 +29,25 @@ This data was taken from a self-reported intake form from all the students enrol
 
 A summary of the main characteristics of `background-clean.csv` can be seen here:
 
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Variable                   | Description                                                                                                                                                                                  |
-+============================+==============================================================================================================================================================================================+
-| `[skill].comf`             | A numerical scale of 1-5 which measures how the student rates their comfortability with the respective skill.                                                                                |
-|                            |                                                                                                                                                                                              |
-| e.g., prog.comf, math.comf | The skills: prog \[programming\], math, stat \[statistics\]                                                                                                                                  |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `[skill].prof`             | An ordinal variable which goes: beg \[beginning\], int \[intermediate\], adv \[advanced\]. This measures how the student rates their proficiency with the respective skill.                  |
-|                            |                                                                                                                                                                                              |
-| e.g., prog.prof, math.prof |                                                                                                                                                                                              |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `upper_div_courses`        | An ordinal variable that groups the number of upper division courses in statistics, math, and programming that the student has taken.                                                        |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `courses`                  | A character that contains a list of the specific courses that the student has completed.                                                                                                     |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `domain_specialization`    | A yes or no answer to whether the student has any domain specialization.                                                                                                                     |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| `research`                 | A categorical variable which contains: yes, no, and unsure. Answers to whether the student has had experienced with supervised research in a setting outside of class or personal projects.  |
-+----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable                   | Description                                                                                                                                                                                 |
++============================+=============================================================================================================================================================================================+
+| `[skill].comf`             | A numerical scale of 1-5 which measures how the student rates their comfortability with the respective skill.                                                                               |
+|                            |                                                                                                                                                                                             |
+| e.g., prog.comf, math.comf | The skills: prog \[programming\], math, stat \[statistics\]                                                                                                                                 |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `[skill].prof`             | An ordinal variable which goes: beg \[beginning\], int \[intermediate\], adv \[advanced\]. This measures how the student rates their proficiency with the respective skill.                 |
+|                            |                                                                                                                                                                                             |
+| e.g., prog.prof, math.prof |                                                                                                                                                                                             |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `upper_div_courses`        | An ordinal variable that groups the number of upper division courses in statistics, math, and programming that the student has taken.                                                       |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `courses`                  | A character that contains a list of the specific courses that the student has completed.                                                                                                    |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `domain_specialization`    | A yes or no answer to whether the student has any domain specialization.                                                                                                                    |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| `research`                 | A categorical variable which contains: yes, no, and unsure. Answers to whether the student has had experienced with supervised research in a setting outside of class or personal projects. |
++----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 A summary of the main characteristics of `interests-clean.csv` can be seen here:
 

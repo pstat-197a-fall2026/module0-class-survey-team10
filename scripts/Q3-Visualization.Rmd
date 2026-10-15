@@ -14,6 +14,10 @@ library(ggplot2)
 # Are students that have done supervised research (not related to class or personal project) more interested in research labs than industry or not?
 ```
 
+To answer our final question, we first want to clean up our data! We are focusing on the variables `type` and `research`. From our data, `type` answers whether the respondent is interested in a research or industry project, or both, and `research` represents whether the respondent has prior supervised research experience (Yes, No, or Unsure). We joined background-clean.csv and interest-clean.csv by respondent id. Two respondents, ids 1038 and 1046 have NA values under `type`. We excluded these two respondents because their type was unavailable. Additionally, four respondents reported "Unsure" about having prior supervised research experience. We dropped these as well because we could not tell which group they belonged in. The final sample was n=45, with complete data on both variables Among the respondents with a clear answer on prior experience in supervised research, 23 reported having experience and 22 did not. 
+
+
+
 ```{r load data}
 background <- read.csv("../data/background-clean.csv")
 interest <- read.csv("../data/interest-clean.csv")
@@ -45,8 +49,8 @@ bck_x_intrst <- background |>
 # n = 45
 
 # Research:
-# Yes = 24
-# No = 21
+# Yes = 23
+# No = 22
 
 # type:
 # lab = 6
@@ -71,6 +75,11 @@ type_research <- bck_x_intrst |>
 type_research
 
 ```
+
+As we can see from the table, industry was the most common choice for both groups. The difference is very small, where those interested in industry having prior research experience (0.6522) and those who did not (0.5909) have a difference of 6 percentage points. From the data, students with research experience were slightly less likely to prefer research projects.
+
+Lab-only students are nearly identical across groups (3 of 22 vs. 3 of 23). Therefore, result doesn’t depend on how those who reported “both” is coded.
+
 
 ```{r visualisation}
 
@@ -105,6 +114,37 @@ ggsave(filename = "../results/report_files/figure-html/Q3-figures/Q3-Proportion-
 ggsave(filename = "../results/report_files/figure-html/Q3-figures/Q3-Histogram-Graph.png",
        plot = hist_grph)
 ```
+
+From the bar graph, we can see that the distributions of having supervised research experience and not having any experience is nearly identical. This illustrates that most students prefer an industry project over a research project. 
+
+Results:
+
+Among students with prior supervised research experience (n = 23), 65.2% preferred industry projects and 34.8% preferred research projecrs or both, compared with 59.1% and 40.9% among students without research experience (n = 22) (Figure 1). The difference between groups was small (about 6 percentage points) and went slightly in the opposite direction from what we expected. We can see that students with research experience were not more likely to prefer research projects. Research-only preference was nearly identical across groups (3 of 22 vs. 3 of 23).
+
+
+Interpretation: 
+
+
+In this sample, we did not see a relationship between having prior supervised research experience and preferring research project. We actually saw a nearly identical response of preferring industry related projects across both groups (65.2% of students with research experience and 59.1% of those without), and students with research experience were, if anything, slightly less likely to prefer labs or both. Since this is an exploratory look at 45 students, we cannot tell whether a difference this small would hold in a larger group.
+
+Our data cannot explain why students favor industry, so the following are hypotheses, not findings. One possible explanation for these results could be because students who have done research may have discovered that they do not enjoy it and prefer to explore industry for a future career. Additionally, Students with research experience may also lack industry experience and want industry projects to broaden their background and resume. We did not ask about students’ reasons, so we cannot test either explanation.
+
+
+Limitations: 
+
+There are several limitations to this analysis. First, this is exploratory and descriptive. We compared proportions, but we did not run a statistical test. Therefore, we can not say whether the small differences we saw can hold byehond the 45 students in the sample. 
+
+Second, the sample size is small, and several of the groups are extremly small. With only 6 students preferring research projects, the percentages shift significantly if one or tow of the students answer differently. 
+
+Third, our coding choices affect the results. We dropped four students who answered “Unsure” about prior research, and two students (ids 1038 and 1046) who had no interest record, so their project preference was unavailable. We also counted the 11 students who chose “both” as preferring research projects, which moves 1/4 of the sample into the lab group. 
+
+Fourth, both variables are self-reported, and students may interpret “supervised research” differently, causing the data to be incorrect. 
+
+Lastly, the data shows an association at most, not a cause. Research experience could shape project preference, but students already interested in research may also be the ones who seek it out, and factors such as year in school, major, or GPA could affect both. 
+
+
+
+
 
 
 
