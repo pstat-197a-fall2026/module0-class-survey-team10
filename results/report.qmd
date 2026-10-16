@@ -1,6 +1,6 @@
 ---
 title: "Analysis of class surveys"
-subtitle: "If you want a subtitle put it here"
+subtitle: "An Investigation of Areas of Interests and Project Preferences"
 author: "Sophia Leng, Caroline Liu, Isaac Luna, Felix Ngo, Varun Sardana"
 date: last-modified
 published-title: "Updated"
@@ -56,17 +56,12 @@ A summary of the main characteristics of `background-clean.csv` can be seen here
 
 A summary of the main characteristics of `interests-clean.csv` can be seen here:
 
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| Variable                         | Description                                                                                                                                  |
-+==================================+==============================================================================================================================================+
-| `type`                           | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| `language`                       | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference                  |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| `domains`                        | A character that contains a list of the domains that the student had selected as their specialization                                        |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| `areas`                          | A character that contains a list of the areas of interest in data science that the student had selected.                                     |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable | Description |
+|----|----|
+| `type` | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
+| `language` | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference |
+| `domains` | A character that contains a list of the domains that the student had selected as their specialization |
+| `areas` | A character that contains a list of the areas of interest in data science that the student had selected. |
 
 ## Questions of interest
 
@@ -162,10 +157,286 @@ There were a few limitations to all 3 questions. The sample sizes were small (n 
 
 In Q1, the non-significant results are not evidence of having no effect. It means that the data is inconclusive. Also, interest was measured by whether students ticked a box on a checklist, so a student who did not select statistical inference may still be interested in it. Furthermore, we did not account for other factors that could influence both language preference and interest, such as prior coursework, major, or instructor. Finally, we focused on one area after initially exploring three. Because that choice was informed by the data, the p-values should be read as descriptive rather than as confirmatory tests.
 
-### Q2. 
+### Q2.
 
 Correlations show tendencies of respondents in this sample and don't show causation. They also don't show which areas matter most to a specific domain. Also, correlation and LASSO weights don't always agree, so conclusions depend on how the data is modeled.
 
 ### Q3.
 
 It should be noted that respondents that answered “unsure” under their research background could denote a borderline experience to supervised research or that the student answered falsely. However, it was decided that it was not statistically significant in altering the distribution of answers after experimenting with the inclusion of the answer. Additionally, several of the groups were extremely small with only 6 students preferring research projects. So, the proportions will shift significantly if one or two of the students answer differently. We also had to drop several respondents due to unavailable data and the classification of "unsure" as negligible. The variables are also self-reported, and students may interpret “supervised research” differently, causing the data to be incorrect. Finally, research experience could shape project preference, but students already interested in research may also be the ones who seek it out, and factors such as year in school, major, or GPA could affect both.
+
+```{r Q1 prep, eval = FALSE}
+interest <- read_csv('../../data/interest-clean.csv', show_col_types = FALSE)
+
+d <- interest %>%
+  mutate(
+    language = factor(language, levels = c('Python', 'R', 'No preference')),
+    interested_stat_inference = str_detect(areas, fixed('Statistical models and inference'))
+  )
+
+nrow(d)
+count(d, language)
+```
+
+```{r Q1 figure, eval = FALSE}
+fig <- d %>%
+  group_by(language) %>%
+  summarise(proportion = mean(interested_stat_inference), n = n()) %>%
+  ggplot(aes(x = language, y = proportion, fill = language)) +
+  geom_col() +
+  labs(title = 'Interest in Statistical Inference by Language Preference',
+       subtitle = 'Proportion of respondents within each language-preference group (n = 49)',
+       x = '', y = 'Proportion interested in statistical inference', fill = 'Language preference') +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = 'none')
+
+fig
+ggsave('../../results/figures/language-vs-statinference.png', fig, width = 6, height = 4.5, dpi = 150)
+```
+
+```{r Q1 model, eval = FALSE}
+model <- glm(interested_stat_inference ~ language, data = d, family = 'binomial')
+
+model_results <- tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+  filter(term != '(Intercept)') %>%
+  mutate(term = str_remove(term, 'language')) %>%
+  select(language_vs_python = term, odds_ratio = estimate,
+         ci_low = conf.low, ci_high = conf.high, p.value)
+
+model_results
+```
+
+```{r Q2 key, eval =FALSE}
+all_areas <- c("Spatial statistics or time series analysis", "Analysis or classification of images", "Deep learning and neural networks", "Data acquisition and engineering", "Natural language processing and analysis of text", "Model deployment and software or web integrations", "Data visualization and interactive dashboards", "Predictive modeling", "Statistical models and inference", "Databases", "Algorithms")
+
+all_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development","Ecology", "AI", "Sports/Economics/Finance", "Music", "Defense", "Economics", "Quantitative Finance", "Financial Markets")
+
+main_domains <- c("Environmental science", "Social or political science", "Biology", "Public health", "Neuroscience", "Technology", "Software development")
+```
+
+```{r Q2 plot freq, eval = FALSE}
+has_area <- sapply(all_areas, grepl, interest$areas)
+area_counts <- colSums(has_area)
+
+area_df <- data.frame(count = area_counts, areas = names(area_counts))
+
+ggplot(area_df, aes(x = count, y = reorder(areas, count))) + geom_col() + labs(y = "Areas of Interest")
+```
+
+```{r Q2 plot domains freq, eval = FALSE}
+domain_counts <- colSums(sapply(all_domains, grepl, interest$domains))
+
+domain_df <- data.frame(count = domain_counts, domains = names(domain_counts))
+
+ggplot(domain_df, aes(x = count, y = reorder(domains, count))) + geom_col() + labs(y = "Domains of Interest")
+```
+
+```{r Q2 plot heat map, eval = FALSE}
+has_domain_main <- sapply(main_domains, grepl, interest$domains)
+
+cor_main <- as.data.frame(as.table(cor(has_area, has_domain_main))) 
+
+ggplot(cor_main, aes(x = Var2, y = Var1, fill = Freq)) + geom_tile(color = "white") + scale_fill_gradient(low = "lightsalmon", high = "skyblue") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(x = "Domains", y = "Areas of Interest", fill = "Correlation")
+```
+
+```{r Q2 plot correlations, eval = FALSE}
+domain_list <- c("Social or political science", "Biology", "Software development")
+
+has_domain <- sapply(domain_list, grepl, interest$domains)
+
+cor_df <- as.data.frame(as.table(cor(has_area, has_domain))) 
+
+ggplot(cor_df, aes(x = Freq, y = reorder(Var1,Freq), fill = Var2)) + geom_col(position = "dodge") + labs(y = "Areas of Interest", x = "Correlation", fill = "Domain")
+```
+
+```{r Q2 make lasso function, eval = FALSE}
+lasso_fit <- function(domain, has_area, has_domain) {
+  # areas as predictors, domain as the outcome var
+  # convert logical to 0 or 1
+  x <- 1 * has_area
+  y <- as.integer(has_domain[, domain])
+  # 5 fold cross validation to choose penalty
+  set.seed(10)
+  model <- cv.glmnet(
+    x, y,
+    family = "binomial",
+    alpha = 1,  # 1 is lasso, 0 is ridge
+    nfolds = 5
+  )
+  return(model)
+}
+```
+
+```{r Q2 make plot function, eval = FALSE}
+# make a plot that ranks the features by how important they are in the lasso
+make_plot <- function(model, domain) {
+  # get coefficients
+  coefs <- as.matrix(coef(model, s = "lambda.min"))
+  importance <- data.frame(
+    feature = rownames(coefs), 
+    Coefficient = as.numeric(coefs)
+    )
+  # remove intercept
+  importance <- subset(importance, feature != "(Intercept)")
+  # rank by how important
+  importance$Importance <- abs(importance$Coefficient)
+  importance <- importance[order(-importance$Importance),]
+
+  ggplot(importance, 
+         aes(x = Importance, y = reorder(feature, Importance),fill = Coefficient > 0)) +
+    geom_col() +
+    scale_fill_manual(
+      values = c(
+        "TRUE" = "skyblue",
+        "FALSE" = "lightsalmon"
+      ),
+      labels = c("Negative","Positive")
+    ) +
+    labs(title = paste(domain, "LASSO Feature Importance"), x = "Absolute Coefficient", y = "Areas of Interest", fill = "Association") 
+}
+```
+
+```{r Q2 make plots, eval = FALSE}
+bio_model <- lasso_fit("Biology", has_area, has_domain)
+
+make_plot(bio_model, "Biology")
+
+software_model <- lasso_fit("Software development", has_area, has_domain)
+
+make_plot(software_model, "Software Development")
+
+social_model <- lasso_fit("Social or political science", has_area, has_domain)
+
+make_plot(social_model, "Social or Political Science")
+```
+
+```{r Q2 save plots, eval = FALSE}
+# Savings plots to figures for my report - Felix :p
+bio_plot <- make_plot(bio_model, "Biology")
+soft_plot <- make_plot(software_model, "Software Development")
+soc_plot <- make_plot(social_model, "Social or Political Science")
+domain_x_int_heatmap <- ggplot(cor_main, aes(x = Var2, y = Var1, fill = Freq)) + geom_tile(color = "white") + scale_fill_gradient(low = "lightsalmon", high = "skyblue") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(x = "Domains", y = "Areas of Interest", fill = "Correlation", title = "Heatmap of Domain and Areas of Interest")
+
+
+plots = tibble(
+  names_plots = c("bio_plot", "soft_plot", "soc_plot", "domain_x_int_heatmap"),
+  plot = list(bio_plot, soft_plot, soc_plot, domain_x_int_heatmap)
+)
+
+save_plot <- function(plot, pathname){
+  ggsave(filename = paste0("../results/figures/Q2-figures/", pathname, ".png"),
+         plot = plot)
+}
+
+map2(plots$plot, plots$names_plots, save_plot)
+
+```
+
+```{r Q3 load data, eval = FALSE}
+background <- read.csv("../data/background-clean.csv")
+interest <- read.csv("../data/interest-clean.csv")
+
+# Join data and drop NA since 2 participants shows up as NA for type
+bck_x_intrst <- background |>
+  left_join(interest, by = "response_id") |>
+  mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
+  mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
+  # Decide that "both" in project `type` will mean "lab"
+  mutate(type = recode_factor(type, 
+                              'both' = 'both', 
+                              'ind' = 'industry',
+                              'lab' = 'research lab')) |>
+  filter_out(is.na(type)) |>
+  filter_out(research == "Unsure")
+
+# 4 pbck_x_intrst# 4 participants answered "Unsure" under `research` background and were excluded
+# Testing if Unsure to be coded as "Yes" or "No" showed that it did not significantly influence the correlation between research and project type preference. 
+
+# participants 1038 and 1046 are dropped for having NA in `type`
+# n = 45
+```
+
+```{r Q3 variables, eval = FALSE}
+
+# n = 45
+
+# Research:
+# Yes = 23
+# No = 22
+
+# type:
+# lab = 6
+# industry = 28
+# both = 11
+
+# No evidence of difference
+table(bck_x_intrst$research, bck_x_intrst$type)
+
+
+type_research <- bck_x_intrst |>
+  distinct(response_id, type, research) |>
+  count(type, research) |>
+  left_join(
+    bck_x_intrst |>
+      distinct(response_id, research) |>
+      count(research, name = 'n_research'),
+    by = 'research'
+  ) |>
+  mutate(prop = n / n_research)
+
+type_research
+
+```
+
+```{r Q3 visualisation, eval = FALSE}
+
+# Proportion Graph
+prop_grph <- ggplot(type_research, aes(x = research, y = prop, fill = type)) +
+  geom_col( position = 'dodge') +
+  scale_y_continuous(breaks = scales::pretty_breaks(20)) +
+  labs(
+    title = "Research Done vs. Project Type Preference (Proportion) (n = 45)",
+    y = 'Proportion',
+    x = 'Done Supervised Research?',
+    fill = 'Project type'
+  )
+
+prop_grph
+
+# Histogram Graph
+hist_grph <- ggplot(bck_x_intrst, aes(x = research, fill = type)) +
+  geom_col(stat = 'count', position = 'dodge') +
+  scale_y_continuous(breaks = scales::pretty_breaks(20)) +
+  labs(
+    title = "Research Done vs. Project Type Preference (Histogram) (n = 45)",
+    y = 'count',
+    x = 'Done Supervised Research?',
+    fill = 'Project type'
+  )
+
+hist_grph
+
+ggsave(filename = "../results/figures/Q3-figures/Q3-Proportion-Graph.png",
+       plot = prop_grph)
+ggsave(filename = "../results/figures/Q3-figures/Q3-Histogram-Graph.png",
+       plot = hist_grph)
+```
+
+```{r Q3 Fisher test, eval = FALSE}
+# Show the contingency table
+
+
+fsher_tbl <- bck_x_intrst |>
+  tbl_summary(
+    by = research, include = type
+  ) |>
+  add_p(test = everything() ~ "fisher.test") |>
+  modify_caption("**Project Type Interest by Research Background**") |>
+  modify_header(label = "Project Type") |>
+  as_gt()
+
+fsher_tbl
+
+gtsave(data = fsher_tbl, 
+       filename = "../results/figures/Q3-figures/Q3-Fisher-Table.png")
+```
