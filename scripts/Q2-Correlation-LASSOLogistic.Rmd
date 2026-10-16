@@ -117,3 +117,26 @@ social_model <- lasso_fit("Social or political science", has_area, has_domain)
 
 make_plot(social_model, "Social or Political Science")
 ```
+
+```{r}
+# Savings plots to figures for my report - Felix :p
+bio_plot <- make_plot(bio_model, "Biology")
+soft_plot <- make_plot(software_model, "Software Development")
+soc_plot <- make_plot(social_model, "Social or Political Science")
+domain_x_int_heatmap <- ggplot(cor_main, aes(x = Var2, y = Var1, fill = Freq)) + geom_tile(color = "white") + scale_fill_gradient(low = "lightsalmon", high = "skyblue") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(x = "Domains", y = "Areas of Interest", fill = "Correlation", title = "Heatmap of Domain and Areas of Interest")
+
+
+plots = tibble(
+  names_plots = c("bio_plot", "soft_plot", "soc_plot", "domain_x_int_heatmap"),
+  plot = list(bio_plot, soft_plot, soc_plot, domain_x_int_heatmap)
+)
+
+save_plot <- function(plot, pathname){
+  ggsave(filename = paste0("../results/figures/Q2-figures/", pathname, ".png"),
+         plot = plot)
+}
+
+map2(plots$plot, plots$names_plots, save_plot)
+
+```
+

@@ -34,6 +34,12 @@ names(which(colSums(is.na(background)) > 0 ))
 
 setdiff(background$response_id, interest$response_id)
 
+bck_x_intrst |> 
+  mutate(domains = str_split(domains, ", ")) |>
+  unnest(cols = c(domains)) |>
+  distinct() |> 
+  subset(!duplicated(domains)) |>
+  select(domains)
 
 bck_x_intrst[rowSums(is.na(bck_x_intrst)) > 0,]
 bck_x_intrst[is.na(bck_x_intrst$type),]

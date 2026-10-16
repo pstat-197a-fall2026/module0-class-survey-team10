@@ -4,9 +4,13 @@ subtitle: "If you want a subtitle put it here"
 author: "Sophia Leng, Caroline Liu, Isaac Luna, Felix Ngo, Varun Sardana"
 date: last-modified
 published-title: "Updated"
-editor: visual
+editor: source
 format: html
 code-copy: true
+editor_options:
+  markdown:
+    wrap: none
+    canonical: true
 execute:
   message: false
   warning: false
@@ -17,6 +21,7 @@ execute:
 ```{r}
 # load any other packages and read data here
 library(tidyverse)
+library(kableExtra)
 ```
 
 ## Executive summary
@@ -51,17 +56,12 @@ A summary of the main characteristics of `background-clean.csv` can be seen here
 
 A summary of the main characteristics of `interests-clean.csv` can be seen here:
 
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| Variable                         | Description                                                                                                                                  |
-+==================================+==============================================================================================================================================+
-| `type`                           | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| `language`                       | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference                  |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| `domains`                        | A character that contains a list of the domains that the student had selected as their specialization                                        |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| `areas`                          | A character that contains a list of the areas of interest in data science that the student had selected.                                     |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable | Description |
+|----|----|
+| `type` | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
+| `language` | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference |
+| `domains` | A character that contains a list of the domains that the student had selected as their specialization |
+| `areas` | A character that contains a list of the areas of interest in data science that the student had selected. |
 
 ## Questions of interest
 
@@ -75,4 +75,66 @@ Our analysis addressed three questions:
 
 ## Findings
 
-Summarize your results. Don't try to explain every step you took; focus instead on providing the main data analytic outputs -- tables and figures -- and explaining clearly what they show. Clarify any important decisions you made in obtaining them. You can display codes if you like but it is not necessary.
+### Findings for Q.1
+
+![Figure 1. Proportion of programming preference against interest in statistical inference.](figures/language-vs-statinference.png)
+
+We first grouped students by their programming language preference and plotted the proportion of each group's interest in statistical inference. 81.8% of R-preferring students expressed interest in statistical inference, compared to 68.8% of those with no preference, and 50.0% who preferred Python.
+
+```{r Display Log-Regression Model Results}
+library(broom)
+interest <- read_csv('../data/interest-clean.csv', show_col_types = FALSE)
+
+d <- interest %>%
+  mutate(
+    language = factor(language, levels = c('Python', 'R', 'No preference')),
+    interested_stat_inference = str_detect(areas, fixed('Statistical models and inference'))
+  )
+
+
+model <- glm(interested_stat_inference ~ language, data = d, family = 'binomial')
+
+model_results <- tidy(model, exponentiate = TRUE, conf.int = TRUE) %>%
+  filter(term != '(Intercept)') %>%
+  mutate(term = str_remove(term, 'language')) %>%
+  select(language_vs_python = term, odds_ratio = estimate,
+         ci_low = conf.low, ci_high = conf.high, p.value) |>
+  rename(
+    "Language vs. Python" = language_vs_python,
+    "Odds Ratio" = odds_ratio,
+    "CI Lower Bound" = ci_low,
+    "CI Upper Bound" = ci_high,
+    "P-value" = p.value
+  )
+
+kable(model_results, caption = "Table 1. Logistic Regression Model for Language Against Interest") |>
+  kable_styling()
+```
+
+R-preferring students had 4.5 times the odds of Python-preferring students of being interested in statistical inference (95% CI: 0.90 to 34.2; p = 0.091). Additionally, students with no preference in language had 2.2 times the odds of Python-preferring students (95% CI: 0.59 to 9.01; p = 0.251). However, neither of these results reached the threshold of p \< .05. and the confidence intervals were significantly wide. The sample for this test is small (N = 49), especially the R-preference group (n=11). Therefore, confidence intervals are wide and both include 1, indicating that the data is compatible with no difference as well as with a large one. These results are best reported as a trend, rather than a confirmed effect.
+
+This relationship between language preference and interest in statistical inference is expected, but the evidence is not strong due to the small sample size, neither comparison being statistically significant, and the confidence intervals being wide enough to have no difference at all. Since there are only 11 students that reported preferring R as a programming language, one or two different answers could noticeably change the estimated odds ratio. One reason for this relationship could be that students who are already more interested in statistics may be more likely to choose R, a language that was built for statisticians. Another reason could be that since most courses at UCSB only use and teach in R, students may just feel more comfortable in this language in general.
+
+### Findings for Q.2
+
+![Figure 2. Heatmap of domain specializations and areas of interest in data science](../results/figures/Q2-figures/domain_x_int_heatmap.png){width="55.6cm"}
+
+The initial investigation for domain specializations and areas of interests was started by selecting the primary domains to focus on. 7 out of the 15 domains were selected with the cutoff being at least 20 students reporting that domain. The heat map was then used to select which domains to proceed with lasso logistic regression by selecting domains with clear visible biases towards one interest or another. Biology and social/political science had opposite correlations for a majority of the areas of interest. Software development was also added as the 3rd domain because intuition would suggest that it is unrelated with biology or social/political science and the correlated areas of interest would differ.
+
+::: {layout="[[1,1],[1]]"}
+![Figure 3. Biology domain correlation to areas of interest](../results/figures/Q2-figures/bio_plot.png)
+
+![Figure 4. Software domain correlation to areas of interest](../results/figures/Q2-figures/soft_plot.png)
+
+![Figure 5. Social Science and Political Science correlation to areas of interest](../results/figures/Q2-figures/soc_plot.png)
+:::
+
+While correlation shows how one area of interest is related to one domain, the logistic regression uses all 11 areas at once as predictors to predict if a student stated interest in the domain. We did three separate models, one for each of the Biology, Software Development, and Social/Political Science domains highlighted in the correlation analysis. Lasso regularization was applied because it aggressively shrinks some coefficients to zero, so we can look at which areas of interest (our predictors) are the most useful for the model. It is important to clarify that when LASSO shrinks a coefficient to zero, it does not mean that the area of interest is unrelated to the domain. Additionally, a 5-fold cross validation was applied to choose the penalty value. The predictors are then ranked on a graph by how large the absolute coefficient is, signalling how important the area of interest was for predicting whether a survey respondent selected a domain. These methods were chosen in consideration of the small sample size (n=49), and for the purposes of exploratory analysis, as opposed to accurate predictions. Thus there is no training/testing split and no model performance evaluation.
+
+For the models, NLP has the highest feature importance for Biology, Data acquisition and engineering and Deep Learning for software development, and Predictive modeling for Social and Political Science. Once again, the model does not show that these fields are necessarily the most important for the corresponding domains, it simply shows that there is an association between selecting a certain area of interest and selecting a domain within our sample. One interesting finding is, although while the top associations seem to match with real life relations, such as using NLP for genomic sequencing in Biology, or how Data acquisition is the first step in many software development pipelines, there are also results from the sample that do not match expectations. For instance, people interested in databases might be interested in software development because databases are frequently used within the domain, but the feature was not important in our model. These results show that the associations between areas of interest and domains reflect tendencies of respondents in the sample. Moreover, there are similarities and differences between the correlation strengths and the weights assigned to the areas from the logistic regression. Thus, the methods and models chosen for exploratory analysis affect the results on how the sample data is portrayed.
+
+### Findings for Q.3
+
+::: {layout="[1,1]"}
+\![Figure 6. Histogram of student swith \]
+:::
