@@ -27,7 +27,7 @@ bck_x_intrst <- background |>
                               'both' = 'both', 
                               'ind' = 'industry',
                               'lab' = 'research lab')) |> 
-  drop_na() |>
+  filter_out(is.na(type)) |>
   filter_out(research == "Unsure")
 ```
 

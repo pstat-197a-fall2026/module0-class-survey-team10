@@ -35,7 +35,6 @@ bck_x_intrst <- background |>
   filter_out(is.na(type)) |>
   filter_out(research == "Unsure")
 
-
 # 4 pbck_x_intrst# 4 participants answered "Unsure" under `research` background and were excluded
 # Testing if Unsure to be coded as "Yes" or "No" showed that it did not significantly influence the correlation between research and project type preference. 
 

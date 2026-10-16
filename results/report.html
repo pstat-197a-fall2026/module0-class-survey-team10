@@ -90,7 +90,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="executive-summary" class="level2">
 <h2 class="anchored" data-anchor-id="executive-summary">Executive summary</h2>
-<p>We analyzed survey responses from 49 students to see how their data science interests were affected by their domains and programming language preferences, as well as how their research background affected their project type preferences. We first sought to see if there was a relationship between students’ areas of interest and domain specialization. Using lasso logistic regression among a few select domains against all available areas of interest as features, we found that natural language processing (NLP) was strongly associated with a Biology specialization, data acquisition and engineering and deep learning for Software, and predictive modeling for Social and Political Science. Secondly, we used logistic regression to test to see if there is an association between an interest in statistical inference and programming language preferences. Relative to students who preferred Python, we found that students that preferred R had an odds ratio of 4.5 (p = 0.09) and students that had no preference had an odds ratio of 2.2 (p = 0.25). However, both odds ratios were imprecise with wide confidence intervals and had a p-value above 0.05 so neither result was statistically significant. Third, we focused on whether students with a background in research affected their preference in project types, it was found that all students regardless of research background skewed towards industry (65% of those that had research experience, and 61% that did not). A Fisher’s exact test was run and concluded that there was no evidence of an association (p &gt; 0.9, n = 41); this test had a sample size of n = 41 after conjoining the two data sets. Due to the small sample size, and the fact that the responses are self-reported, these results are largely exploratory and can only detect large patterns.</p>
+<p>We analyzed survey responses from 49 students to see how their data science interests were affected by their domains and programming language preferences, as well as how their research background affected their project type preferences. We first sought to see if there was a relationship between students’ areas of interest and domain specialization. Using lasso logistic regression among a few select domains against all available areas of interest as features, we found that natural language processing (NLP) was strongly associated with a Biology specialization, data acquisition and engineering and deep learning for Software, and predictive modeling for Social and Political Science. Secondly, we used logistic regression to test to see if there is an association between an interest in statistical inference and programming language preferences. Relative to students who preferred Python, we found that students that preferred R had an odds ratio of 4.5 (p = 0.09) and students that had no preference had an odds ratio of 2.2 (p = 0.25). However, both odds ratios were imprecise with wide confidence intervals and had a p-value above 0.05 so neither result was statistically significant. Third, we focused on whether students with a background in research affected their preference in project types, it was found that all students regardless of research background skewed towards industry (65% of those that had research experience, and 61% that did not). A Fisher’s exact test was run and concluded that there was no evidence of an association (p &gt; 0.9, n = 45); this test had a sample size of n = 45 after conjoining the two data sets. Due to the small sample size, and the fact that the responses are self-reported, these results are largely exploratory and can only detect large patterns.</p>
 </section>
 <section id="data-description" class="level2">
 <h2 class="anchored" data-anchor-id="data-description">Data description</h2>
@@ -140,8 +140,8 @@ ul.task-list li input[type="checkbox"] {
 <p>A summary of the main characteristics of <code>interests-clean.csv</code> can be seen here:</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 8%">
-<col style="width: 91%">
+<col style="width: 19%">
+<col style="width: 80%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -222,7 +222,7 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 </div>
-<p>R-preferring students had 4.5 times the odds of Python-preferring students of being interested in statistical inference (95% CI: 0.90 to 34.2; p = 0.091). Additionally, students with no preference in language had 2.2 times the odds of Python-preferring students (95% CI: 0.59 to 9.01; p = 0.251). However, neither of these results reached the threshold of p &lt; .05. and the confidence intervals were significantly wide. The sample for this test is small, especially the R-preference group (n=11). Therefore, confidence intervals are wide and both include 1, indicating that the data is compatible with no difference as well as with a large one. These results are best reported as a trend, rather than a confirmed effect.</p>
+<p>R-preferring students had 4.5 times the odds of Python-preferring students of being interested in statistical inference (95% CI: 0.90 to 34.2; p = 0.091). Additionally, students with no preference in language had 2.2 times the odds of Python-preferring students (95% CI: 0.59 to 9.01; p = 0.251). However, neither of these results reached the threshold of p &lt; .05. and the confidence intervals were significantly wide. The sample for this test is small (N = 49), especially the R-preference group (n=11). Therefore, confidence intervals are wide and both include 1, indicating that the data is compatible with no difference as well as with a large one. These results are best reported as a trend, rather than a confirmed effect.</p>
 <p>This relationship between language preference and interest in statistical inference is expected, but the evidence is not strong due to the small sample size, neither comparison being statistically significant, and the confidence intervals being wide enough to have no difference at all. Since there are only 11 students that reported preferring R as a programming language, one or two different answers could noticeably change the estimated odds ratio. One reason for this relationship could be that students who are already more interested in statistics may be more likely to choose R, a language that was built for statisticians. Another reason could be that since most courses at UCSB only use and teach in R, students may just feel more comfortable in this language in general.</p>
 </section>
 <section id="findings-for-q.2" class="level3">
@@ -233,21 +233,87 @@ ul.task-list li input[type="checkbox"] {
 <figcaption>Figure 2. Heatmap of domain specializations and areas of interest in data science</figcaption>
 </figure>
 </div>
-<p>::: {layout = “[1,1],[1]”} <img src="../results/figures/Q2-figures/bio_plot.png" class="img-fluid" style="width:55cm" alt="Figure 3. Biology domain correlation to areas of interest"></p>
+<p>The initial investigation for domain specializations and areas of interests was started by selecting the primary domains to focus on. 7 out of the 15 domains were selected with the cutoff being at least 20 students reporting that domain. The heat map was then used to select which domains to proceed with lasso logistic regression by selecting domains with clear visible biases towards one interest or another. Biology and social/political science had opposite correlations for a majority of the areas of interest. Software development was also added as the 3rd domain because intuition would suggest that it is unrelated with biology or social/political science and the correlated areas of interest would differ.</p>
+<div class="quarto-layout-panel" data-layout="[[1,1],[1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../results/figures/Q2-figures/soft_plot.png" class="img-fluid figure-img" style="width:55.6cm"></p>
+<p><img src="../results/figures/Q2-figures/bio_plot.png" class="img-fluid figure-img"></p>
+<figcaption>Figure 3. Biology domain correlation to areas of interest</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../results/figures/Q2-figures/soft_plot.png" class="img-fluid figure-img"></p>
 <figcaption>Figure 4. Software domain correlation to areas of interest</figcaption>
 </figure>
 </div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../results/figures/Q2-figures/soc_plot.png" class="img-fluid figure-img"></p>
 <figcaption>Figure 5. Social Science and Political Science correlation to areas of interest</figcaption>
 </figure>
 </div>
-<p>:::</p>
-<p>Summarize your results. Don’t try to explain every step you took; focus instead on providing the main data analytic outputs – tables and figures – and explaining clearly what they show. Clarify any important decisions you made in obtaining them. You can display codes if you like but it is not necessary.</p>
+</div>
+</div>
+</div>
+<p>While correlation shows how one area of interest is related to one domain, the logistic regression uses all 11 areas at once as predictors to predict if a student stated interest in the domain. We did three separate models, one for each of the Biology, Software Development, and Social/Political Science domains highlighted in the correlation analysis. Lasso regularization was applied because it aggressively shrinks some coefficients to zero, so we can look at which areas of interest (our predictors) are the most useful for the model. It is important to clarify that when LASSO shrinks a coefficient to zero, it does not mean that the area of interest is unrelated to the domain. Additionally, a 5-fold cross validation was applied to choose the penalty value. The predictors are then ranked on a graph by how large the absolute coefficient is, signalling how important the area of interest was for predicting whether a survey respondent selected a domain. These methods were chosen in consideration of the small sample size (n=49), and for the purposes of exploratory analysis, as opposed to accurate predictions. Thus there is no training/testing split and no model performance evaluation.</p>
+<p>For the models, NLP has the highest feature importance for Biology, Data acquisition and engineering and Deep Learning for software development, and Predictive modeling for Social and Political Science. Once again, the model does not show that these fields are necessarily the most important for the corresponding domains, it simply shows that there is an association between selecting a certain area of interest and selecting a domain within our sample. One interesting finding is, although while the top associations seem to match with real life relations, such as using NLP for genomic sequencing in Biology, or how Data acquisition is the first step in many software development pipelines, there are also results from the sample that do not match expectations. For instance, people interested in databases might be interested in software development because databases are frequently used within the domain, but the feature was not important in our model. These results show that the associations between areas of interest and domains reflect tendencies of respondents in the sample. Moreover, there are similarities and differences between the correlation strengths and the weights assigned to the areas from the logistic regression. Thus, the methods and models chosen for exploratory analysis affect the results on how the sample data is portrayed.</p>
+</section>
+<section id="findings-for-q.3" class="level3">
+<h3 class="anchored" data-anchor-id="findings-for-q.3">Findings for Q.3</h3>
+<div class="quarto-layout-panel" data-layout="[1,1]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/Q3-figures/Q3-Histogram-Graph.png" class="img-fluid figure-img"></p>
+<figcaption>Figure 6. Histogram of students with research background against project preference</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/Q3-figures/Q3-Proportion-Graph.png" class="img-fluid figure-img"></p>
+<figcaption>Figure 7. Proportion of students with research background against project preference</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>Compared to the other 2 questions, this analysis contains a smaller sample size (n = 45). Among the 51 respondents, 2 were dropped due to having no available responses to their project type, and 4 were dropped for holding the response “unsure” under research background. “Unsure” was decided to be dropped due to the low number of respondents that answered, and also to simplify the analysis.&nbsp;</p>
+<p>Industry type projects were the majority selected across students that had and had not done supervised research-with only 6 participants selecting research labs and 11 selecting both. Despite the nearly even split of research backgrounds, an extreme bias to industry is presented. Although, from the distribution of the proportion graph and the histogram, it can be seen that marginally more students that had done supervised research selected industry as their preferred project type.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/Q3-figures/Q3-Fisher-Table.png" class="img-fluid figure-img" style="width:15cm"></p>
+<figcaption>Table 2. Fisher test and contingency table for Q3</figcaption>
+</figure>
+</div>
+<p>In order to confirm if there is any relationship between the two variables, Fisher’s exact test was run with a significance level of 0.05 since the expected frequency for each group below the suggested 5 for a chi-square test. The assumptions required by the Fisher test are that the variables are independent, and that the values within the contingency table are fixed; all variables had met the assumptions. A p-value of 1 was produced by the test, and thus there was no significant evidence to reject the hypothesis that there is no association between the two variables.&nbsp;Thusm e can see that students with research experience were not more likely to prefer research projects; research-only preference was nearly identical across groups (3 of 22 vs.&nbsp;3 of 23).</p>
+</section>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>There were a few limitations to all 3 questions. The sample sizes were small (n = 49 for Q1 and Q2) and (n = 45 for Q3), and the R group in Q1 in particular has only 11 students. Therefore, the estimates are imprecise and the analysis has low power to detect moderate differences.</p>
+<section id="q1." class="level3">
+<h3 class="anchored" data-anchor-id="q1.">Q1.</h3>
+<p>In Q1, the non-significant results are not evidence of having no effect. It means that the data is inconclusive. Also, interest was measured by whether students ticked a box on a checklist, so a student who did not select statistical inference may still be interested in it. Furthermore, we did not account for other factors that could influence both language preference and interest, such as prior coursework, major, or instructor. Finally, we focused on one area after initially exploring three. Because that choice was informed by the data, the p-values should be read as descriptive rather than as confirmatory tests.</p>
+</section>
+<section id="q2." class="level3">
+<h3 class="anchored" data-anchor-id="q2.">Q2.</h3>
+<p>Correlations show tendencies of respondents in this sample and don’t show causation. They also don’t show which areas matter most to a specific domain. Also, correlation and LASSO weights don’t always agree, so conclusions depend on how the data is modeled.</p>
+</section>
+<section id="q3." class="level3">
+<h3 class="anchored" data-anchor-id="q3.">Q3.</h3>
+<p>It should be noted that respondents that answered “unsure” under their research background could denote a borderline experience to supervised research or that the student answered falsely. However, it was decided that it was not statistically significant in altering the distribution of answers after experimenting with the inclusion of the answer. Additionally, several of the groups were extremely small with only 6 students preferring research projects. So, the proportions will shift significantly if one or two of the students answer differently. We also had to drop several respondents due to unavailable data and the classification of “unsure” as negligible. The variables are also self-reported, and students may interpret “supervised research” differently, causing the data to be incorrect. Finally, research experience could shape project preference, but students already interested in research may also be the ones who seek it out, and factors such as year in school, major, or GPA could affect both.</p>
 </section>
 </section>
 

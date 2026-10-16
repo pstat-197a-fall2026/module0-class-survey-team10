@@ -26,7 +26,7 @@ library(kableExtra)
 
 ## Executive summary
 
-We analyzed survey responses from 49 students to see how their data science interests were affected by their domains and programming language preferences, as well as how their research background affected their project type preferences. We first sought to see if there was a relationship between students' areas of interest and domain specialization. Using lasso logistic regression among a few select domains against all available areas of interest as features, we found that natural language processing (NLP) was strongly associated with a Biology specialization, data acquisition and engineering and deep learning for Software, and predictive modeling for Social and Political Science. Secondly, we used logistic regression to test to see if there is an association between an interest in statistical inference and programming language preferences. Relative to students who preferred Python, we found that students that preferred R had an odds ratio of 4.5 (p = 0.09) and students that had no preference had an odds ratio of 2.2 (p = 0.25). However, both odds ratios were imprecise with wide confidence intervals and had a p-value above 0.05 so neither result was statistically significant. Third, we focused on whether students with a background in research affected their preference in project types, it was found that all students regardless of research background skewed towards industry (65% of those that had research experience, and 61% that did not). A Fisher's exact test was run and concluded that there was no evidence of an association (p \> 0.9, n = 41); this test had a sample size of n = 41 after conjoining the two data sets. Due to the small sample size, and the fact that the responses are self-reported, these results are largely exploratory and can only detect large patterns.
+We analyzed survey responses from 49 students to see how their data science interests were affected by their domains and programming language preferences, as well as how their research background affected their project type preferences. We first sought to see if there was a relationship between students' areas of interest and domain specialization. Using lasso logistic regression among a few select domains against all available areas of interest as features, we found that natural language processing (NLP) was strongly associated with a Biology specialization, data acquisition and engineering and deep learning for Software, and predictive modeling for Social and Political Science. Secondly, we used logistic regression to test to see if there is an association between an interest in statistical inference and programming language preferences. Relative to students who preferred Python, we found that students that preferred R had an odds ratio of 4.5 (p = 0.09) and students that had no preference had an odds ratio of 2.2 (p = 0.25). However, both odds ratios were imprecise with wide confidence intervals and had a p-value above 0.05 so neither result was statistically significant. Third, we focused on whether students with a background in research affected their preference in project types, it was found that all students regardless of research background skewed towards industry (65% of those that had research experience, and 61% that did not). A Fisher's exact test was run and concluded that there was no evidence of an association (p \> 0.9, n = 45); this test had a sample size of n = 45 after conjoining the two data sets. Due to the small sample size, and the fact that the responses are self-reported, these results are largely exploratory and can only detect large patterns.
 
 ## Data description
 
@@ -56,12 +56,17 @@ A summary of the main characteristics of `background-clean.csv` can be seen here
 
 A summary of the main characteristics of `interests-clean.csv` can be seen here:
 
-| Variable | Description |
-|----|----|
-| `type` | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
-| `language` | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference |
-| `domains` | A character that contains a list of the domains that the student had selected as their specialization |
-| `areas` | A character that contains a list of the areas of interest in data science that the student had selected. |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable                         | Description                                                                                                                                  |
++==================================+==============================================================================================================================================+
+| `type`                           | A categorical variable that contains the student's preference for their project type. Contains: ind \[industry\], lab \[research lab\], both |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| `language`                       | A categorical variable that contains the student's programming language preference. Only contains: R, Python, No preference                  |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| `domains`                        | A character that contains a list of the domains that the student had selected as their specialization                                        |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| `areas`                          | A character that contains a list of the areas of interest in data science that the student had selected.                                     |
++----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 ## Questions of interest
 
@@ -136,5 +141,31 @@ For the models, NLP has the highest feature importance for Biology, Data acquisi
 ### Findings for Q.3
 
 ::: {layout="[1,1]"}
-\![Figure 6. Histogram of student swith \]
+![Figure 6. Histogram of students with research background against project preference](figures/Q3-figures/Q3-Histogram-Graph.png)
+
+![Figure 7. Proportion of students with research background against project preference](figures/Q3-figures/Q3-Proportion-Graph.png)
 :::
+
+Compared to the other 2 questions, this analysis contains a smaller sample size (n = 45). Among the 51 respondents, 2 were dropped due to having no available responses to their project type, and 4 were dropped for holding the response “unsure” under research background. “Unsure” was decided to be dropped due to the low number of respondents that answered, and also to simplify the analysis. 
+
+Industry type projects were the majority selected across students that had and had not done supervised research-with only 6 participants selecting research labs and 11 selecting both. Despite the nearly even split of research backgrounds, an extreme bias to industry is presented. Although, from the distribution of the proportion graph and the histogram, it can be seen that marginally more students that had done supervised research selected industry as their preferred project type.
+
+![Table 2. Fisher test and contingency table for Q3](figures/Q3-figures/Q3-Fisher-Table.png){width="15cm"}
+
+In order to confirm if there is any relationship between the two variables, Fisher’s exact test was run with a significance level of 0.05 since the expected frequency for each group below the suggested 5 for a chi-square test. The assumptions required by the Fisher test are that the variables are independent, and that the values within the contingency table are fixed; all variables had met the assumptions. A p-value of 1 was produced by the test, and thus there was no significant evidence to reject the hypothesis that there is no association between the two variables. Thusm e can see that students with research experience were not more likely to prefer research projects; research-only preference was nearly identical across groups (3 of 22 vs. 3 of 23).
+
+## Limitations
+
+There were a few limitations to all 3 questions. The sample sizes were small (n = 49 for Q1 and Q2) and (n = 45 for Q3), and the R group in Q1 in particular has only 11 students. Therefore, the estimates are imprecise and the analysis has low power to detect moderate differences.
+
+### Q1.
+
+In Q1, the non-significant results are not evidence of having no effect. It means that the data is inconclusive. Also, interest was measured by whether students ticked a box on a checklist, so a student who did not select statistical inference may still be interested in it. Furthermore, we did not account for other factors that could influence both language preference and interest, such as prior coursework, major, or instructor. Finally, we focused on one area after initially exploring three. Because that choice was informed by the data, the p-values should be read as descriptive rather than as confirmatory tests.
+
+### Q2. 
+
+Correlations show tendencies of respondents in this sample and don't show causation. They also don't show which areas matter most to a specific domain. Also, correlation and LASSO weights don't always agree, so conclusions depend on how the data is modeled.
+
+### Q3.
+
+It should be noted that respondents that answered “unsure” under their research background could denote a borderline experience to supervised research or that the student answered falsely. However, it was decided that it was not statistically significant in altering the distribution of answers after experimenting with the inclusion of the answer. Additionally, several of the groups were extremely small with only 6 students preferring research projects. So, the proportions will shift significantly if one or two of the students answer differently. We also had to drop several respondents due to unavailable data and the classification of "unsure" as negligible. The variables are also self-reported, and students may interpret “supervised research” differently, causing the data to be incorrect. Finally, research experience could shape project preference, but students already interested in research may also be the ones who seek it out, and factors such as year in school, major, or GPA could affect both.
