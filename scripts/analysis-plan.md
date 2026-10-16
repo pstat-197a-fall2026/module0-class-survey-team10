@@ -35,15 +35,55 @@
   * No multiple-testing correction applied (not needed for the single scoped area, would matter if the 3-area version is also reported)
 
 2. (Modeling) Do students’ domains correlate with students’ preferences in the area of interest?
+
 * Variables, Files, and Respondents:
+
+  * Variables used:
+
+    * `areas` (multi-select, 11 data science interests)
+    * 'domains' (multi-select, 15 domains of interests)
+  * Files used:
+  
+    * `interest-clean.csv` both variables are in this file
+  * Respondents:
+  
+    * n = 49  (49 students consented to sharing their interests)
 * Data Preparation:
+  
+  * Each respondent's area and domains of interest were stored in a long string with comma seperated values. Used grepl to check for each domain/area which turned every response into a true/false vector. The result was 
+  49x11 matrix for areas and 49x15 matrix for domains.
+  * Summed each column to get the number of responses for each area and domain
+  * For modeling the true/false were converted into 1/0. The 11 areas were used as predictors to predict whether the respondent selected a given domain.
+
 * Summaries or Plots:
+  
+  * Bar chart of area counts (at least 20 responses for each area)
+  * Bar chart of domain counts (7 domains with more than 20 responses each and 8 with less than 6 responses each)
+  * Correlation heat map of 11 areas and the 7 main domains
+  * Grouped bar chart with 3 selected domains(Biology, Social/Poltical Science, and Software development) and their area correlations.
+  * Lasso feature importance plots(1 for each selected domains). Predictors are ranked by absolute coefficents (red bars are negative assoications and blue bars are positive)
+  
+* Modeling:
+  * 3 seperate LASSO logistic regressions (1 for each selected domain). Coefficients are taken at lamba.min
+  * Each model uses all 11 areas at once to predict whether a student selected the domain
+  * Top predictors for each domain:
+    * Biology: Natural language processing
+    * Software development: Data acquisition and engineering and Deep learning
+    * Social/Poltical Science: Predictive modeling
+  * Some results match real world results. For example, NLP methods are used in genomic sequencing and data acquisition is the first step in many software pipelines
+  * Other results don't match. Databases might be expected to be important to software development but it was not an important feature
+
 * Key Choices to Check:
+  * The 8 domains with fewer than 6 responses were dropped from the heatmap for clarity
+  * Domain selection: Biology and Social/Poltical science were chosen because of their opposite correlations in the heatmap. Software development was added based on intuition that it would relate to different areas than the other 2.
+  * LASSO was used instead of regular logistic regression because LASSO shrinks coefficients to 0, thus showing which areas are most important to the model. A zero coefficient doesn't mean the area is unrelated to the domain.
+  * The penalty was chosen with 5 fold cross validation using lamda.min and set.seed(10)
+  * There is no train test split and no performance evaluation because of the small sample and the goal is exploratory analysis not prediction.
 * Limitations:
-
-&#x20;
-
-
+  * Small sample size (n = 49)
+  * Results only describe this years capstone students. They do not generalize to all data science students or UCSB students broadly
+  * Correlations show tendencies of respondents in this sample and don't show causation. They also don't show which areas matter most to a specific domain
+  * Correlation and LASSO weights don't always agree, so conclusions depend on how the data is modeled
 
 
 3\. (Investigative) Are students that have done supervised research (not related to class or personal project) more interested in research labs than industry or not?
