@@ -27,15 +27,15 @@ bck_x_intrst <- background |>
   left_join(interest, by = "response_id") |>
   mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
   mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
-  # Decide that "both" in project `type` will mean "lab"
-  mutate(type = recode_factor(type, 
-                              'both' = 'both', 
+  # "both" is kept as its own category (not merged into "lab" or "industry")
+  mutate(type = recode_factor(type,
+                              'both' = 'both',
                               'ind' = 'industry',
                               'lab' = 'research lab')) |>
   filter_out(is.na(type)) |>
   filter_out(research == "Unsure")
 
-# 4 pbck_x_intrst# 4 participants answered "Unsure" under `research` background and were excluded
+# 4 participants answered "Unsure" under `research` background and were excluded
 # Testing if Unsure to be coded as "Yes" or "No" showed that it did not significantly influence the correlation between research and project type preference. 
 
 # participants 1038 and 1046 are dropped for having NA in `type`

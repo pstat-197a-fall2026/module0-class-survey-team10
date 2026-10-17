@@ -26,11 +26,11 @@ library(kableExtra)
 
 ## Executive summary
 
-We analyzed survey responses from 49 students to see how their data science interests were affected by their domains and programming language preferences, as well as how their research background affected their project type preferences. We first sought to see if there was a relationship between students' areas of interest and domain specialization. Using lasso logistic regression among a few select domains against all available areas of interest as features, we found that natural language processing (NLP) was strongly associated with a Biology specialization, data acquisition and engineering and deep learning for Software, and predictive modeling for Social and Political Science. Secondly, we used logistic regression to test to see if there is an association between an interest in statistical inference and programming language preferences. Relative to students who preferred Python, we found that students that preferred R had an odds ratio of 4.5 (p = 0.09) and students that had no preference had an odds ratio of 2.2 (p = 0.25). However, both odds ratios were imprecise with wide confidence intervals and had a p-value above 0.05 so neither result was statistically significant. Third, we focused on whether students with a background in research affected their preference in project types, it was found that all students regardless of research background skewed towards industry (65% of those that had research experience, and 61% that did not). A Fisher's exact test was run and concluded that there was no evidence of an association (p \> 0.9, n = 45); this test had a sample size of n = 45 after conjoining the two data sets. Due to the small sample size, and the fact that the responses are self-reported, these results are largely exploratory and can only detect large patterns.
+We analyzed survey responses from 49 students to see how their data science interests were affected by their domains and programming language preferences, as well as how their research background affected their project type preferences. We first sought to see if there was a relationship between students' areas of interest and domain specialization. Using lasso logistic regression among a few select domains against all available areas of interest as features, we found that natural language processing (NLP) was strongly associated with a Biology specialization, data acquisition and engineering and deep learning for Software, and predictive modeling for Social and Political Science. Secondly, we used logistic regression to test to see if there is an association between an interest in statistical inference and programming language preferences. Relative to students who preferred Python, we found that students that preferred R had an odds ratio of 4.5 (p = 0.09) and students that had no preference had an odds ratio of 2.2 (p = 0.25). However, both odds ratios were imprecise with wide confidence intervals and had a p-value above 0.05 so neither result was statistically significant. Third, we focused on whether students with a background in research affected their preference in project types, it was found that all students regardless of research background skewed towards industry (65% of those that had research experience, and 59% that did not). A Fisher's exact test was run and concluded that there was no evidence of an association (p \> 0.9, n = 45); this test had a sample size of n = 45 after conjoining the two data sets. Due to the small sample size, and the fact that the responses are self-reported, these results are largely exploratory and can only detect large patterns.
 
 ## Data description
 
-This data was taken from a self-reported intake form from all the students enrolled in the PSTAT 197A course of 2026. The majority of the data from self-reported form was split into two categories: background and interests, and stored into data sets `backgroud-clean.csv` and `interests-clean.csv`. Demographic information and response times were stored in different data sets: `class-summary.csv` and `survey-metadata.csv`. Of the total 55 students in the class, 51 consented to having their background information used for analysis, 49 consented to having their interests used for analysis, 49 consented to both, 2 did not consent to either. For the purpose of this particular analysis, `background-clean.csv` and `interests-clean.csv` are primarily focused on and covered. Both data sets were given artificial identifiers stored as `response_id` which was also used to conjoin the data sets for analysis.
+This data was taken from a self-reported intake form from all the students enrolled in the PSTAT 197A course of 2026. The majority of the data from self-reported form was split into two categories: background and interests, and stored into data sets `background-clean.csv` and `interest-clean.csv`. Demographic information and response times were stored in different data sets: `class-summary.csv` and `survey-metadata.csv`. Of the total 55 students in the class, 51 consented to having their background information used for analysis, 49 consented to having their interests used for analysis, 49 consented to both, 2 consented to background only, and 4 did not consent to either. For the purpose of this particular analysis, `background-clean.csv` and `interests-clean.csv` are primarily focused on and covered. Both data sets were given artificial identifiers stored as `response_id` which was also used to conjoin the data sets for analysis.
 
 A summary of the main characteristics of `background-clean.csv` can be seen here:
 
@@ -54,7 +54,7 @@ A summary of the main characteristics of `background-clean.csv` can be seen here
 | `research`                 | A categorical variable which contains: yes, no, and unsure. Answers to whether the student has had experienced with supervised research in a setting outside of class or personal projects. |
 +----------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-A summary of the main characteristics of `interests-clean.csv` can be seen here:
+A summary of the main characteristics of `interest-clean.csv` can be seen here:
 
 | Variable | Description |
 |----|----|
@@ -147,7 +147,7 @@ Industry type projects were the majority selected across students that had and h
 
 ![Table 2. Fisher test and contingency table for Q3](figures/Q3-figures/Q3-Fisher-Table.png){width="15cm"}
 
-In order to confirm if there is any relationship between the two variables, Fisher’s exact test was run with a significance level of 0.05 since the expected frequency for each group below the suggested 5 for a chi-square test. The assumptions required by the Fisher test are that the variables are independent, and that the values within the contingency table are fixed; all variables had met the assumptions. A p-value of 1 was produced by the test, and thus there was no significant evidence to reject the hypothesis that there is no association between the two variables. Thusm e can see that students with research experience were not more likely to prefer research projects; research-only preference was nearly identical across groups (3 of 22 vs. 3 of 23).
+In order to confirm if there is any relationship between the two variables, Fisher’s exact test was run with a significance level of 0.05 since the expected frequency for each group below the suggested 5 for a chi-square test. The assumptions required by the Fisher test are that the variables are independent, and that the values within the contingency table are fixed; all variables had met the assumptions. A p-value of 1 was produced by the test, and thus there was no significant evidence to reject the hypothesis that there is no association between the two variables. Thus, we can see that students with research experience were not more likely to prefer research projects; research-only preference was nearly identical across groups (3 of 22 vs. 3 of 23).
 
 ## Limitations
 
@@ -341,15 +341,15 @@ bck_x_intrst <- background |>
   left_join(interest, by = "response_id") |>
   mutate(across(ends_with(".prof"), ~ factor(.x, levels = c("beg", "int", "adv")))) |>
   mutate(across(ends_with(".comf"), ~ factor(.x, levels = c("3", "4", "5")))) |>
-  # Decide that "both" in project `type` will mean "lab"
-  mutate(type = recode_factor(type, 
-                              'both' = 'both', 
+  # "both" is kept as its own category (not merged into "lab" or "industry")
+  mutate(type = recode_factor(type,
+                              'both' = 'both',
                               'ind' = 'industry',
                               'lab' = 'research lab')) |>
   filter_out(is.na(type)) |>
   filter_out(research == "Unsure")
 
-# 4 pbck_x_intrst# 4 participants answered "Unsure" under `research` background and were excluded
+# 4 participants answered "Unsure" under `research` background and were excluded
 # Testing if Unsure to be coded as "Yes" or "No" showed that it did not significantly influence the correlation between research and project type preference. 
 
 # participants 1038 and 1046 are dropped for having NA in `type`
